@@ -1,0 +1,9 @@
+.container-chart {
+  width: 70%;
+  max-width: 550px;
+}
+.calendar {
+  width: 45.5%;
+  max-width: 550px;
+  height: 50%;
+}
