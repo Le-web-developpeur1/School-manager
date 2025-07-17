@@ -17,6 +17,10 @@ const paiementSchema = new mongoose.Schema({
         type: Date,
         defaut: Date.new
     },
+    anneeScolaire: {
+        type: String,
+        required: true
+    },
     comptable: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
