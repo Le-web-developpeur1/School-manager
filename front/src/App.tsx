@@ -1,17 +1,18 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import './App.css';
-import Dashboard from "./components/dashboard/Dashboard";
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import Login from './pages/Login';
+import DashboardAdmin from './pages/DashboardAdmin';
 
-const App: React.FC = () => {
 
-  return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Dashboard/>}/>
-        
-      </Routes>
-    </Router>
-  )
+
+const AppRouter = () => {
+    return (
+        <BrowserRouter>
+            <Routes>
+            <Route path="/" element={<Login />} />
+            <Route path="/admin" element={<DashboardAdmin/>} />
+            </Routes>
+        </BrowserRouter>
+    )
 };
 
-export default App;
+export default AppRouter;

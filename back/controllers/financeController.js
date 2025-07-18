@@ -5,13 +5,14 @@ const PDFDocument = require('pdfkit');
 
 exports.creerPaiement = async (req, res) => {
     try {
-        const { eleve, montant, motif, anneeScolaire } = req.body;
+        const { eleve, montant, motif, anneeScolaire, datePaiement } = req.body;
         const comptable = req.user.id;
         const paiement = await Paiement.create({ 
             eleve, 
             montant, 
             motif, 
-            anneeScolaire, 
+            anneeScolaire,
+            datePaiement, 
             comptable 
         });
         res.status(201).json({ success: true, paiement });
