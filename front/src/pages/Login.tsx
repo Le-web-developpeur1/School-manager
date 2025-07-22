@@ -6,10 +6,14 @@ import toast from 'react-hot-toast';
 const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [loading, setLoading] = useState(false);
+
     const navigate = useNavigate();
 
     const handleLogin = async (e) => {
         e.preventDefault();
+        setLoading(true);
+
         try {
             const res = await login({ email, password });
             console.log('Tentative de login avec :', email, password);
@@ -18,14 +22,29 @@ const Login = () => {
             localStorage.setItem('token', res.data.token);
             localStorage.setItem('role', res.data.utilisateur.role);
 
-            toast.success('Connexion réussie !');
             console.log('Réponse du serveur :', res.data);
-            if (res.data.utilisateur.role === 'admin') navigate('/admin');
-            else if (res.data.utilisateur.role === 'comptable') navigate('/admin');
+
+            toast.success(res.data.message || 'Connexion réussie !');
+            if (res.data.utilisateur.role === 'admin') {
+                setTimeout(() => {
+                    setLoading(false);
+                    navigate('/admin');
+                }, 2000);
+            }
+            else if (res.data.utilisateur.role === 'comptable') {
+                setTimeout(() => {
+                    navigate('/admin');
+                    setLoading(false);
+                },2000);
+            }
             else navigate('/');
         } catch (error) {
-            toast.error('Email ou mot de passe incorrect');
-            console.error(error);
+            setTimeout(() => {
+                toast.error('Email ou mot de passe incorrect');
+                console.error(error);
+                setLoading(false);
+            },1000)
+            
         }
     };
 
@@ -47,9 +66,17 @@ const Login = () => {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                 />
-                <button type="submit" className="bg-blue-600 text-white w-full p-2 rounded hover:bg-blue-700">
-                    Se connecter
-                </button>
+                 <button 
+                            type="submit"
+                            className="w-full py-3 mt-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200 flex justify-center items-center"
+                            disabled={loading}
+                    >
+                       {loading ? (
+                            <span className="border-t-2 border-white border-solid w-5 h-5 rounded-full animate-spin"></span>
+                        ) : (
+                            "Se connecter"
+                        )}
+                    </button>
             </form>
         </div>
     )
