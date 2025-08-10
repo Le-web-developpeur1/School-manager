@@ -10,12 +10,17 @@ const paiementSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
+    mois: {
+        type: String,
+        required: true,       
+    },
     motif: {
-        type: String
+        type: String,
+        required: true
     },
     datePaiement: {
         type: Date,
-        defaut: Date.new
+        default: Date.now
     },
     anneeScolaire: {
         type: String,

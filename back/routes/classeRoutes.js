@@ -6,5 +6,8 @@ const checkRole = require('../middleware/checkRole');
 
 router.post('/', authMiddleware, checkRole(['admin']), classeController.createClasse);
 router.get('/', authMiddleware, checkRole(['admin']), classeController.listerClasses);
+router.put('/:id', authMiddleware, checkRole(['admin']), classeController.modiferClasses);
+router.delete('/:id', authMiddleware, checkRole(['admin']), classeController.supprimeClasse);
+router.get('/:id/details', authMiddleware, checkRole(['admin', 'comptable', 'enseignant']), classeController.getClasseDetails)
 
 module.exports = router;

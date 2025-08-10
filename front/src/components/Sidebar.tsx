@@ -5,6 +5,7 @@ import {
     Bell,
     Settings,
     LogOut,
+    Book
   } from 'lucide-react';
   import { NavLink, useNavigate } from 'react-router-dom';
   import { logout } from '../services/authService';
@@ -15,7 +16,8 @@ import {
   
     const handleLogout = () => {
       logout();
-      navigate('/login');
+      navigate('/');
+
     };
   
     const linkClass =
@@ -33,7 +35,7 @@ import {
                 <NavLink to="/admin" className={linkClass}>
                   <Home size={20} /> Tableau de Bord
                 </NavLink>
-                <NavLink to="/users" className={linkClass}>
+                <NavLink to="/admin/users" className={linkClass}>
                   <Users size={20} /> Utilisateurs
                 </NavLink>
                 <NavLink to="/classes" className={linkClass}>
@@ -41,6 +43,9 @@ import {
                 </NavLink>
                 <NavLink to="/eleves" className={linkClass}>
                   <Users size={20} /> Élèves
+                </NavLink>
+                <NavLink to="/matieres" className={linkClass}>
+                  <Book size={20} /> Matières
                 </NavLink>
                 <NavLink to="/settings" className={linkClass}>
                   <Settings size={20} /> Paramètres

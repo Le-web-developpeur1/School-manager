@@ -11,6 +11,11 @@ const eleveSchema = new mongoose.Schema({
         required: true,
         trim: true
     },
+    sexe: {
+        type: String,
+        required: true,
+        enum: ["Masculin", "Feminin"]
+    },
     dateNaissance: {
         type: Date
     },
@@ -18,6 +23,7 @@ const eleveSchema = new mongoose.Schema({
         type: String,
         trim: true
     },
+    niveau: String,
     classe: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Classe',

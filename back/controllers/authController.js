@@ -20,7 +20,7 @@ exports.login = async (req, res) => {
                 message: 'Mot de passe incorrect'
             });
         }
-        const token = jwt.sign({id: user._id, role: user.role}, process.env.SECRET_KEY, {expiresIn: "7d"});
+        const token = jwt.sign({id: user._id, role: user.role, actif: user.actif}, process.env.SECRET_KEY, { expiresIn: "24h" });
         res.status(200).json({
             success: true,
             message: 'Connexion réussie !',
@@ -30,6 +30,7 @@ exports.login = async (req, res) => {
                 nom: user.nom,
                 prenom: user.prenom,
                 role: user.role,
+                actif: user.actif,
                 email: user.email
             }
         });

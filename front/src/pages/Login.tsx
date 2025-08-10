@@ -49,26 +49,28 @@ const Login = () => {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-100">
-            <form onSubmit={handleLogin} className="bg-white p-6 rounded shadow w-96">
+        <div className="min-h-screen flex items-center justify-center bg-gray-100"
+        style={{ backgroundImage: "url('/src/assets/images/School_manager.png')" }}
+        >
+            <form onSubmit={handleLogin} className="p-6 ml-72 mb-68 rounded bg-opacity-80  shadow-lg w-96">
                 <h2 className='text-2xl font-bold mb-4 text-center'>Connexion</h2>
                 <input
                     type="email"
                     placeholder="Email"
-                    className="w-full mb-3 p-2 border"
+                    className="w-full mb-3 p-2 border focus:outline-none"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                 />
                 <input
                     type="password"
                     placeholder="Mot de passe"
-                    className="w-full mb-3 p-2 border"
+                    className="w-full mb-3 p-2 border focus:outline-none"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                 />
                  <button 
                             type="submit"
-                            className="w-full py-3 mt-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200 flex justify-center items-center"
+                            className="w-full cursor-pointer py-3 mt-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200 flex justify-center items-center"
                             disabled={loading}
                     >
                        {loading ? (

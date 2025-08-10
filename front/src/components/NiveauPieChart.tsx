@@ -32,7 +32,7 @@ const NiveauPieChart = ({ data }) => {
         },
     };
     return (
-        <div className="bg-white p-4 rounded shadow-md h-[226px]">
+        <div className="bg-white p-4 rounded shadow-md h-[220px]">
             <h2 className="text-lg font-semibold text-gray-700 mb-4">📚 Répartition par niveau</h2>
             <Pie data={chartData} options={options} />
         </div>

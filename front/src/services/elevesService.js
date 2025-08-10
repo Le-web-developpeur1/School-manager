@@ -4,8 +4,9 @@ export const createEleve = (data) => {
     return api.post('/eleves', data);
 };
 
-export const getEleves = (params) => {
-    return api.get('/eleves', { params });
+export const getEleves = async (params) => {
+    const res = await api.get('/eleves', { params });
+    return res.data;
 };
 
 export const getEleveById = (id) => {
@@ -19,3 +20,10 @@ export const updateEleve = (id, data) => {
 export const deleteEleve = (id) => {
     return api.delete(`/eleves/${id}`);
 };
+export const archiverEleve = (id) => {
+    return api.patch(`/eleves/${id}/archive`);
+  };
+  export const getElevesParClasse = () => {
+    return api.get('/eleves-par-classe');
+};
+  

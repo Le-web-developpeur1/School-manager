@@ -4,41 +4,34 @@ import { Chart as ChartJs, BarElement, CategoryScale, LinearScale, Tooltip, Lege
 
 ChartJs.register(BarElement , CategoryScale, LinearScale, Tooltip, Legend);
 const GraphBar = ({ data }) => {
-    const labels = Object.keys(data);
-    const montants = Object.values(data);
+    const labels = data.map(item => item.mois);
+    const montants = data.map(item => item.montant);
 
     const chartData = {
         labels,
         datasets: [
-           { 
-            label: 'Encaissements (GNF)',
+          {
+            label: "Encaissements mensuels",
             data: montants,
-            backgroundColor: '#3b82f6',
-            borderRadius: 4,
-        }
-        ],
-    }
-
-    const options = {
+            backgroundColor: "#3b82f6"
+          }
+        ]
+      };
+      const options = {
         responsive: true,
-        plugins:{
-            legend: {
-                display: true,
-                position: 'top'
-            },
-        },
         scales: {
-            y: {
-                beginAtZero: true,
-                ticks: {
-                    callback: (value) => value.toLocaleString(),
-                },
-            },
-        },
-    };
+          y: {
+            beginAtZero: true
+          }
+        }
+      };
+      
+    console.log("Labels:", labels);
+    console.log("Montants:", montants);
+
 
     return (
-        <div className="bg-white p-3 rounded shadow-md h-[226px]">
+        <div className="bg-white p-3 rounded shadow-md h-[220px]">
             <h2 className="text-lg font-semibold text-gray-700 mb-2">📊 Encaissements Mensuels</h2>
             <Bar data={chartData} options={options} />
         </div>

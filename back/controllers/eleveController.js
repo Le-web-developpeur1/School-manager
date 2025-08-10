@@ -66,7 +66,7 @@ exports.listerEleves = async (req, res) => {
             }
         });
     } catch (error) {
-        res.Status(500).json({ message: "Erreur serveur", erreur: error.message });
+        res.status(500).json({ message: "Erreur serveur", erreur: error.message });
     }
 };
 
@@ -99,15 +99,13 @@ exports.archiverEleve = async (req, res) => {
     try {
         const { id } = req.params;
 
-        const eleve = await Eleve.findById(id);
+        const eleve = await Eleve.findByIdAndUpdate(id, { archive: true}, { new: true });
         if (!eleve) {
             return res.status(404).json({
                 success: false,
                 message: "Élève introuvable"
             });
         } else {
-            eleve.archive = true;
-            await eleve.save();
             res.status(200).json({
                 success: true,
                 message: "Élève archivé avec succès !", 
@@ -141,3 +139,37 @@ exports.supprimerEleve = async (req, res) => {
     }
 };
 
+exports.elevesParClasse = async (req, res) => {
+    try {
+      const stats = await Eleve.aggregate([
+        {
+          $group: {
+            _id: "$classe",
+            total: { $sum: 1 }
+          }
+        },
+        {
+          $lookup: {
+            from: "classes",
+            localField: "_id",
+            foreignField: "_id",
+            as: "classe"
+          }
+        },
+        {
+          $unwind: "$classe"
+        },
+        {
+          $project: {
+            _id: 0,
+            classe: "$classe.nom",
+            total: 1
+          }
+        }
+      ]);
+      res.status(200).json(stats);
+    } catch (error) {
+      res.status(500).json({ message: "Erreur lors du chargement des statistiques", error });
+    }
+  };
+  

@@ -29,7 +29,7 @@ const RepartitionSexe = ({ data }) => {
     };
 
     return (
-        <div className="bg-white p-3 rounded shadow-md mt-14 h-[260px]">
+        <div className="bg-white p-3 rounded shadow-md mt-14 h-[220px]">
             <h2 className="text-lg font-semibold text-gray-700 mb-2">👫 Sexe</h2>
             <Pie data={chartData} options={options} />
         </div>

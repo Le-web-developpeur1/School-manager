@@ -9,5 +9,7 @@ router.get('/', authMiddleware, checkRole(['admin', 'enseignant']), eleveControl
 router.put('/:id', authMiddleware, checkRole(['admin']), eleveController.modifierEleve);
 router.delete('/:id', authMiddleware, checkRole(['admin']), eleveController.supprimerEleve);
 router.patch('/:id/archive', authMiddleware, checkRole(['admin']), eleveController.archiverEleve);
+router.get("/eleves-par-classe", authMiddleware, checkRole(['admin']), eleveController.elevesParClasse);
+
 
 module.exports = router;

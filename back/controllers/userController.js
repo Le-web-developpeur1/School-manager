@@ -36,7 +36,7 @@ exports.createUser = async (req, res) => {
         });
 
     } catch (err) {
-        console.error("Erreur lors de la création de l'utilisateur :", err);
+        console.error("Erreur lors de l'ajout de l'utilisateur :", err);
         res.status(500).json({
             success: false,
             message: "Erreur serveur",
@@ -45,7 +45,7 @@ exports.createUser = async (req, res) => {
     }
 };
 
-exports.listerUser = async (req, res) => {
+exports.getUser = async (req, res) => {
     try {
         const users = await User.find().select('-password');
         res.status(200).json(users);
@@ -57,27 +57,74 @@ exports.listerUser = async (req, res) => {
     }
 };
 
-exports.modifierUtilisateur = async (req, res) => {
+exports.updateUser = async (req, res) => {
+    const { id } = req.params;
+    const majData = req.body;
+  
     try {
-        const { id } = req.params;
-        const majData = req.body;
-
-        const utilisateurModifie = await User.findByIdAndUpdate(id, majData, {
-            new: true,
-            runValidators: true
+      const utilisateurModifie = await User.findByIdAndUpdate(id, majData, {
+        new: true,
+        runValidators: true,
+      });
+  
+      if (!utilisateurModifie) {
+        return res.status(404).json({
+          success: false,
+          message: "Utilisateur non trouvé",
         });
+      }
+  
+      res.status(200).json({
+        success: true,
+        message: "Utilisateur modifié avec succès !",
+        utilisateur: utilisateurModifie,
+      });
+    } catch (err) {
+      console.error("Erreur modification utilisateur:", err.message);
+  
+      res.status(500).json({
+        success: false,
+        message: "Erreur serveur",
+        erreur: err.message,
+      });
+    }
+};
 
-        if (!utilisateurModifie) {
-            return res.status(404).json({success: false, message: "Utilisateur non trouvé" });
-        } else {
-            res.status(200).json({
-                success: true,
-                message: "Utilisateur modifié avec succès !",
-                utilisateur: utilisateurModifie
+exports.deleteUser = async (req, res) => {
+    try {
+        const utilisateur = await User.findByIdAndDelete(req.params.id);
+        if (!utilisateur) {
+            return res.status(404).json({
+                success: false,
+                message: "Utilisateur introuvable"
             });
         }
+
+        res.status(200).json({
+            success: true,
+            message: "Utilisateur suppirmé avec succès !"
+        });
     } catch (error) {
-        console.error("Erreur lors de la modification de l'utilisateur", error);
-        res.status(500).json({ message: "Erreur serveur", erreur: error.message });
+        console.error("Erreur suppression :", error);
+        res.status(500).json({
+            success: false,
+            message: "Erreur serveur",
+            erreur: error.message
+        });
+    }
+};
+
+exports.toogleActivation = async (req, res) => {
+    try {
+        const user = await User.findById(req.params.id);
+
+        if (!user) return res.status(404).json({ success: false, message:"Utilisateur introuvable" });
+
+        user.actif = !user.actif;
+        await user.save();
+
+        res.status(200).json({ success: true, message: "État mis à jour avec succès !", user});
+    } catch (error) {
+        res.status(500).json({ success: false, message: "Erreur changement état", erreur: error.message });
     }
 };

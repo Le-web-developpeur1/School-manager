@@ -9,6 +9,10 @@ const classeRoutes = require('./routes/classeRoutes');
 const eleveRoutes = require('./routes/eleveRoutes');
 const financeRoutes = require('./routes/financeRoutes');
 const initAdminRoute = require('./routes/initAdminRoute');
+const statsRoutes = require('./routes/statsRoute');
+const matiereRoutes = require('./routes/matiereRoutes');
+const settingsRoutes = require('./routes/settingsRoutes');
+
 
 const connectDB = require("./config/db");
 
@@ -23,6 +27,9 @@ app.use('/api/classes', classeRoutes);
 app.use('/api/eleves', eleveRoutes);
 app.use('/api/paiements', financeRoutes);
 app.use('/api/setup', initAdminRoute);
+app.use('/api/stats', statsRoutes);
+app.use('/api/matieres', matiereRoutes);
+app.use('/api/settings', settingsRoutes);
 
 
 connectDB();

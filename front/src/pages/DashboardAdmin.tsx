@@ -6,6 +6,7 @@ import GraphBar from '../components/GraphBar';
 import NiveauPieChart from '../components/NiveauPieChart';
 import RatioSTChart from '../components/RatioSTChart';
 import RepartitionSexe from '../components/RepartitionSexe';
+import GraphElevesParClasse from '../components/GraphElevesClasse';
 // import toast from 'react-hot-toast';
 
 const DashboardAdmin = () => {
@@ -99,10 +100,11 @@ const DashboardAdmin = () => {
           <StatCard title="Montant encaissé (GNF)" value={stats.montantTotal.toLocaleString()} icon="montant" />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-            {graphData && <GraphBar data={graphData} />}
+            {graphData.length > 0 && <GraphBar data={graphData} />}
             {Object.keys(niveauData).length > 0 && <NiveauPieChart data={niveauData} />}
             {Object.keys(ratioData).length > 0 && <RatioSTChart data={ratioData} />}
             {Object.keys(sexeData).length > 0 && <RepartitionSexe data={sexeData} />}
+            <GraphElevesParClasse/>
         </div>
         
       </main>

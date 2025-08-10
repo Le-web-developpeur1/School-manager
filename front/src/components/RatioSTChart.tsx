@@ -30,7 +30,7 @@ const RatioSTChart = ({ data }) => {
     };
 
     return (
-        <div className="bg-white p-5 rounded shadow-md mt-14 h-[260px]">
+        <div className="bg-white p-5 rounded shadow-md mt-14 h-[220px]">
             <h2 className="text-lg font-semibold text-gray-700">🎓 Ratio Élèves / Enseignants</h2>
             <Doughnut data={chartData} options={options} />
         </div>

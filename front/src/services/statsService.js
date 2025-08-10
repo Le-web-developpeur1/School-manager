@@ -23,3 +23,7 @@ export const getRepartitionParNiveau = () => {
 export const getRepartitionSexe = () => {
     return api.get('/stats/repartition-sexe');
 };
+
+export const getElevesParClasse = () => {
+    return api.get('/eleves-par-classe');
+};
