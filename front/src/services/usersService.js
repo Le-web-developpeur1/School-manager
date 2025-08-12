@@ -17,7 +17,6 @@ export const updateUser = (id, data) => {
     return api.put(`/users/${id}`, data);
 };
 
-console.log("🔁 deleteUser appelé !");
 export const deleteUser = (id) => {
     return api.delete(`/users/${id}`);
 };

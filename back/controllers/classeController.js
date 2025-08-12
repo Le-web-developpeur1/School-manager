@@ -109,19 +109,24 @@ exports.getClasseDetails = async (req, res) => {
     }
 };
 
-exports.statsEleveParClasse = async (req, res) => {
-    const { id } = req.params;
+exports.statsElevesParClasse = async (req, res) => {
     try {
-       const eleves = await Eleve.find({ classe: id });
-
-       res.status(200).json({
-        success: true,
-        classe: id,
-        nombre: eleves.length,
-        eleves
-       });
+      const classes = await Classe.find(); // récupère toutes les classes
+      const stats = await Promise.all(
+        classes.map(async (classe) => {
+          const total = await Eleve.countDocuments({ classe: classe._id });
+          return {
+            nomClasse: classe.nom,
+            total,
+          };
+        })
+      );
+  
+      res.status(200).json({ success: true, eleves: stats });
     } catch (error) {
-        console.error("Erreur lors de la récupération des élèves", error.message);
-        res.status(500).json({ success: false, message: "Erreur serveur", erreur: error.message });
+      console.error("Erreur stats élèves par classe", error.message);
+      res.status(500).json({ success: false, message: "Erreur serveur", erreur: error.message });
     }
-};
+  };
+  
+  

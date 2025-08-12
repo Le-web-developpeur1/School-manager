@@ -31,9 +31,15 @@ exports.getStats = async (req, res) => {
 
 exports.getEncaissementsMensuels = async (req, res) => {
     try {
+
       const encaissements = await Paiement.aggregate([
         {
-          $match: { archive: false }
+          $match: { 
+            datePaiement: {
+                $gte: new Date("2025-01-01"),
+                $lte: new Date("2025-12-31")
+            }
+         }
         },
         {
           $group: {
@@ -75,7 +81,7 @@ exports.getRepartitionParNiveau = async (req, res) => {
 
         res.status(200).json(result);
     } catch (error) {
-        console.error("Erreur lors de la repartition par niveau :", error);
+        console.error("Erreur repartition par niveau :", error);
         res.status(500).json({ message: "Erreur serveur" });
     }
 };

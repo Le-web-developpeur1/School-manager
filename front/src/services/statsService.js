@@ -25,5 +25,18 @@ export const getRepartitionSexe = () => {
 };
 
 export const getElevesParClasse = () => {
-    return api.get('/eleves-par-classe');
+    return api.get("/stats/eleves-par-classe");
+};  
+  
+
+// statsService.ts
+export const getStatsComptable = async () => {
+    try {
+      const res = await api.get('/stats/comptable');
+      return res.data;
+    } catch (error) {
+      console.error('Erreur stats comptable:', error.message);
+      return { data: {} };
+    }
 };
+  

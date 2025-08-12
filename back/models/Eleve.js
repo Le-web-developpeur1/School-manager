@@ -23,7 +23,11 @@ const eleveSchema = new mongoose.Schema({
         type: String,
         trim: true
     },
-    niveau: String,
+    niveau: {
+        type: String,
+        enum: ["Maternelle", "Primaire", "Collège", "Lycée"],
+        required: true,
+      },
     classe: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Classe',

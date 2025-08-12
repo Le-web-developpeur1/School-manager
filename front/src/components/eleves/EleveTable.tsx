@@ -89,7 +89,7 @@ const EleveTable: React.FC = () => {
       {/* Header */}
       <div className="px-6 py-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="text-xl sm:text-2xl font-semibold text-gray-900">Élèves</h2>
+          <h2 className="text-xl sm:text-2xl font-semibold text-gray-900">🧑‍🎓 Gestion des Elèves</h2>
           <p className="text-sm text-gray-500">
             Gérez les inscriptions, états et classes en un clin d’œil.
           </p>
@@ -191,7 +191,6 @@ const EleveTable: React.FC = () => {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17v-2a4 4 0 118 0v2m-6 4h4M12 3v4m6 4h.01M6 11h.01" />
                     </svg>
                     <p className="font-medium">Aucun élève trouvé</p>
-                    <p className="text-sm">Ajuste ta recherche ou réinitialise le filtre.</p>
                     {search && (
                       <button
                         onClick={() => setSearch("")}

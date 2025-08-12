@@ -1,22 +1,30 @@
 const Eleve = require('../models/Eleve');
 const Paiement = require('../models/Paiement');
-const ExcelJS = require('exceljs');
-const PDFDocument = require('pdfkit');
+const { genererReferencePaiement } = require('../services/referenceService');
 
 exports.creerPaiement = async (req, res) => {
     try {
-        const { eleve, montant, motif, datePaiement, anneeScolaire, mois } = req.body;
+        const { eleve, montant, motif, datePaiement, anneeScolaire, mois, periode } = req.body;
         const comptable = req.user.id;
+
+        const eleveExiste = await Eleve.findById(eleve);
+        if (!eleveExiste) {
+            return res.status(404).json({ success: false, message:"Élève introuvable" });
+        }
+        const reference = genererReferencePaiement();
+
         const paiement = await Paiement.create({ 
             eleve, 
             montant,
             mois,
+            periode,
             datePaiement,
             motif, 
             anneeScolaire,
-            comptable
+            comptable,
+            reference
         });
-        res.status(201).json({ success: true, paiement });
+        res.status(201).json({ success: true, message: "Paiement enrégistré avec succès !", paiement });
     } catch (error) {
         res.status(500).json({ success: false, message: "Erreur d'ajout paiement", erreur: error.message });
     }
@@ -34,11 +42,18 @@ exports.listerPaiements = async (req, res) => {
         filtre.anneeScolaire = req.query.anneeScolaire;
        }
 
+       const page = parseInt(req.query.page) || 1;
+       const limit = parseInt(req.query.limit) || 20;
+       const skip = (page - 1) * limit;
+
        const paiements = await Paiement.find(filtre)
         .populate('eleve', 'nom prenom matricule')
-        .populate('comptable', 'nom');
+        .populate('comptable', 'nom prenom')
+        .sort({datePaiement: -1 })
+        .skip(skip)
+        .limit(limit);
 
-        res.status(200).json({ success: true, paiements });
+        res.status(200).json({ success: true, page, paiements });
     } catch (error) {
         res.status(500).json({ success: false, message: "Erreur lors de la récupération des paiements", erreur: error.message });
     }
@@ -59,15 +74,17 @@ exports.releveEleve = async (req, res) => {
 
         //Récupération des paiements selon les critères
         const paiements = await Paiement.find(filtre)
-            .populate('comptable', 'nom')
+            .populate('comptable', 'nom prenom')
             .sort({ datePaiement: 1 });
+
+        const eleveInfo = await Eleve.findById(eleveId, 'nom prenom matricule');
 
         //Calcul du total encaissé
         const total = paiements.reduce((acc, p) => acc + p.montant, 0);
         
         res.status(200).json({
             success: true,
-            eleve: eleveId,
+            eleve: eleveInfo,
             anneeScolaire: anneeScolaire || 'toutes',
             total,
             paiements
@@ -113,14 +130,20 @@ exports.totalParClasse = async (req, res) => {
         //Total encaissé
         const total = paiements.reduce((acc, p) => acc + p.montant, 0);
 
+        const breakdown = {};
+        paiements.forEach(p => {
+            breakdown[p.motif] = (breakdown[p.motif] || 0) + p.montant;
+        });
+
         res.status(200).json({
             success: true,
             classe: classeId,
             anneeScolaire: anneeScolaire || 'toutes',
-            mois: mois ? parseInt(mois) : 'tous',
+            mois: mois || 'tous',
             annee: annee || 'toutes',
             total,
-            nombrePaiements: paiements.length
+            nombrePaiements: paiements.length,
+            breakdown
         });
     } catch (error) {
         res.status(500).json({
@@ -131,119 +154,27 @@ exports.totalParClasse = async (req, res) => {
     }
 };
 
-exports.exportPaiementsClasse = async (req, res) => {
+exports.rechercherEleve = async (req, res) => {
     try {
-        const { classeId } = req.params;
-        const { anneeScolaire, mois, annee } = req.query;
-
-        //Récupérer les élèves de la classe
-        const elevesDeLaClasse = await Eleve.find({ classe: classeId}, '_id nom prenom matricule');
-
-        const idsEleves = elevesDeLaClasse.map(e => e._id);
-        const filtre = { eleve: { $in: idsEleves } };
-
-        if (anneeScolaire) {
-            filtre.anneeScolaire = anneeScolaire;
+        const { q } = req.query;
+        if (!q || q.trim() === '') {
+            return res.status(400).json({ success: false, message: "Requête vide" });
         }
 
-        if (mois && annee) {
-            const debut = new Date(annee, mois - 1, 1);
-            const fin = new Date(annee, mois, 1);
-            filtre.dataPaiement = { $gte: debut, $lt: fin };
-        }
+        const regex = new RegExp(q, 'i');
 
-        const paiements = await Paiement.find(filtre)
-            .populate('eleve', 'nom prenom matricule')
-            .populate('comptable', 'nom');
+        const resultats = await Eleve.find({
+            $or: [
+                { nom: regex },
+                { prenom: regex },
+                { matricule: regex }
+            ]
+        }).limit(20);
 
-        //Création du fichier Excel
-        const workbook = new ExcelJS.Workbook();
-        const Worksheet = workbook.addWorksheet('Relevé Paiements');
-
-        Worksheet.columns = [
-            { header: 'Nom', key: 'nom', width: 20 },
-            { header: 'Prénom', key: 'prenom', width: 20 },
-            { header: 'Matricule', key: 'matricule', width: 20 },
-            { header: 'Motif', key: 'motif', width: 25 },
-            { header: 'Montant', key: 'montant', width: 15 },
-            { header: 'Date', key: 'date', width: 20 },
-            { header: 'Comptable', key: 'comptable', width: 20 },
-        ];
-
-        paiements.forEach(p => {
-            Worksheet.addRow({
-                nom: p.eleve.nom,
-                prenom: p.eleve.prenom,
-                matricule: p.eleve.matricule,
-                motif: p.motif,
-                montant: p.montant,
-                date: p.datePaiement.toLocaleDateString(),
-                comptable: p.comptable ? p.comptable.nom : '-',
-            });
-        });
-
-        //Envoi du fichier
-        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        res.setHeader('Content-Disposition', 'attachment; filename="ReleveClasse.xlsx"');
-
-        await workbook.xlsx.write(res);
-        res.end();   
+        res.status(200).json({ success: true, resultats });
     } catch (error) {
-        res.status(500).json({ success: false, message: "Erreur export Excel", erreur: error.message });
+        res.status(500).json({ success: false, message: "Erreur lors de la recherche", erreur: error.message });
     }
 };
 
-exports.exportRelevePdf = async (req, res) => {
-    try {
-        const { eleveId } = req.params;
-        const { anneeScolaire } = req.query;
 
-        const filtre = { eleve: eleveId };
-        if (anneeScolaire) {
-            filtre.anneeScolaire = anneeScolaire;
-        }
-
-        const paiements = await Paiement.find(filtre)
-            .populate('eleve', 'nom prenom matricule')
-            .populate('comptable', 'nom')
-            .sort({ datePaiement: 1 });
-        
-        const doc = new PDFDocument();
-        const filename = `Releve_${paiements[0]?.eleve?.nom || 'eleve'}.pdf`;
-
-        //Configurations des headers pour le téléchargement
-        res.setHeader('Content-Type', 'application/pdf');
-        res.setHeader('Content-Disposition', `attachement; filename="${filename}"`);
-
-        //Génération du contenu PDF
-        doc.pipe(res);
-        doc.fontSize(18).text('Relevé de Paiements', { align: 'center' });
-        doc.moveDown();
-
-        //Infos élève
-        const e = paiements[0]?.eleve;
-        if (e) {
-            doc.fontSize(12).text(`Nom : ${e.nom}`);
-            doc.text(`Prénom : ${e.prenom}`);
-            doc.text(`Matricule :  ${e.matricule}`);
-        }
-
-        if (anneeScolaire) {
-            doc.text(`Année Scolaire : ${anneeScolaire}`);
-            doc.moveDown();
-        }
-
-        //Paiements
-        let total = 0;
-        paiements.forEach(p => {
-            doc.text(`${p.datePaiement.toLocaleDateString()} - ${p.motif} - ${p.montant} GNF - Comptable ${p.comptable?.nom || '---'}`);
-            total += p.montant;
-        });
-
-        doc.moveDown();
-        doc.fontSize(14).text(`Total encaissé : ${total} GNF`, { align: 'right' });
-        doc.end();
-    } catch (error) {
-        res.status(500).json({ success: false, message: "Erreur génération PDF", erreur: error.message });
-    }
-};
