@@ -7,10 +7,6 @@ const classeShema = new mongoose.Schema({
     },
     niveau: {
         type: String,
-        enum: [
-            "Maternelle", "1ère", "2ème", "3ème", "4ème", "5ème", "6ème", "7ème", "8ème",
-            "9ème", "10ème", "11ème S", "11ème L", "12ème S", "12ème L", "Terminale S", "Terminale L"
-        ],
         required: true
     },
     anneeScolaire: {
@@ -19,7 +15,8 @@ const classeShema = new mongoose.Schema({
     },
     enseignant: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "User"
+        ref: "User",
+        required: false
     },
     effectif: {
         type: Number,

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { createClasse } from "../../services/classeService";
+import { createClasse, getNiveau } from "../../services/classeService";
 import { getEnseignants } from "../../services/enseignantService";
+
 import toast from "react-hot-toast";
 
 type Props = {
@@ -15,32 +16,36 @@ type Enseignant = {
 
 const AjoutClasse = ({ onClose }: Props) => {
   const [nom, setNom] = useState("");
-  const [niveau, setNiveau] = useState("");
+  const [niveaux, setNiveaux] = useState<string[]>([]);
   const [annee, setAnnee] = useState<number | "">("");
   const [enseignantId, setEnseignantId] = useState("");
   const [enseignants, setEnseignants] = useState<Enseignant[]>([]);
 
   useEffect(() => {
-    const fetchEnseignants = async () => {
+    const fetchData = async () => {
       try {
-        const res = await getEnseignants();
-        setEnseignants(res.data);
+        const [niveauxRes, enseignantsRes] = await Promise.all([
+          getNiveau(),
+          getEnseignants()
+        ]);
+        setNiveaux(niveauxRes.data);
+        setEnseignants(enseignantsRes.data);
       } catch (err) {
         toast.error("Erreur chargement enseignants");
       }
     };
-    fetchEnseignants();
+    fetchData();
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!nom || !niveau || !annee) {
+    if (!nom || !annee) {
       toast.error("Tous les champs sauf enseignant sont obligatoires");
       return;
     }
 
     try {
-      await createClasse({ nom, niveau, annee: Number(annee), enseignantId });
+      await createClasse({ nom, niveaux, annee: Number(annee), enseignantId });
       toast.success("Classe ajoutée !");
       onClose();
     } catch (err) {
@@ -60,13 +65,17 @@ const AjoutClasse = ({ onClose }: Props) => {
             onChange={(e) => setNom(e.target.value)}
             className="w-full border px-3 py-2 rounded"
           />
-          <input
-            type="text"
-            placeholder="Niveau (ex: Terminale)"
-            value={niveau}
-            onChange={(e) => setNiveau(e.target.value)}
-            className="w-full border px-3 py-2 rounded"
-          />
+          <select
+              value={niveaux}
+              onChange={(e) => setNiveaux(e.target.value)}
+              required
+              className="w-full border px-3 py-2 rounded"
+          >
+              <option value="">-- Sélectionner un niveau --</option>
+              {niveaux.map((n) => (
+                <option key={n} value={n}>{n}</option>
+              ))}
+          </select>
           <input
             type="number"
             placeholder="Année scolaire"

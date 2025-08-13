@@ -97,22 +97,27 @@ exports.modifierEleve = async (req, res) => {
 
 exports.archiverEleve = async (req, res) => {
     try {
-        const { id } = req.params;
+       const eleve = await Eleve.findById(req.params.id);
 
-        const eleve = await Eleve.findByIdAndUpdate(id, { archive: true}, { new: true });
-        if (!eleve) {
-            return res.status(404).json({
-                success: false,
-                message: "Élève introuvable"
-            });
-        } else {
-            res.status(200).json({
-                success: true,
-                message: "Élève archivé avec succès !", 
-                eleve
-            });
-        }
+       if (!eleve) {
+        return res.status(404).json({ success: false, message: "Eleve introuvable" });
+       }
+
+       eleve.archive = !eleve.archive;
+       console.log("Avant sauvegarde:", eleve);
+       await eleve.save();
+
+       
+       
+       const action = eleve.archive ? "archivé" : "restauré";
+       res.status(200).json({
+         success: true,
+         message: `Élève ${action} avec succès !`,
+         eleve
+       });
+       
     } catch (error) {
+        console.error("Erreur complète:", error);
         res.status(500).json({ message: "Erreur lors de l'archivage", erreur: error.message });
     }
 };
@@ -141,7 +146,7 @@ exports.supprimerEleve = async (req, res) => {
 
 exports.elevesParClasse = async (req, res) => {
     try {
-      const stats = await Eleve.aggregate([
+      const eleves = await Eleve.aggregate([
         {
           $group: {
             _id: "$classe",
@@ -167,7 +172,7 @@ exports.elevesParClasse = async (req, res) => {
           }
         }
       ]);
-      res.status(200).json(stats);
+      res.status(200).json(eleves);
     } catch (error) {
       res.status(500).json({ message: "Erreur lors du chargement des statistiques", error });
     }

@@ -128,3 +128,13 @@ exports.toogleActivation = async (req, res) => {
         res.status(500).json({ success: false, message: "Erreur changement état", erreur: error.message });
     }
 };
+
+exports.getEnseignants = async (req, res) => {
+    try {
+        const enseignants = await User.find({ role: "enseignant" }).select("_id nom prenom");
+        res.status(200).json(enseignants);
+    } catch (error) {
+        console.error("Erreur chargement enseignants", error);
+        res.status(500).json({ message: "Erreur server", erreur: error.message });
+    }
+};

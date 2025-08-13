@@ -19,3 +19,15 @@ export const updateClasse = (id, data) => {
 export const deleteClasse = (id) => {
     return api.delete(`/eleves/${id}`);
 };
+
+export const getNiveau = () => {
+    return api.get('/classes/niveaux');
+};
+
+export const getClasse = () => {
+    return api.get('/classes');
+};
+
+export const getClasseDetails = (id) =>
+    api.get(`/classes/${id}/details`);
+  

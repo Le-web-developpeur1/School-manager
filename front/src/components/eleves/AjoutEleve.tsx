@@ -1,7 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { createEleve } from "../../services/elevesService";
+import { getNiveau, getClasse } from "../../services/classeService";
 
 const AjoutEleve = ({ onSuccess }: { onSuccess?: () => void }) => {
+  const [niveaux, setNiveaux] = useState<string[]>([]);
+  const [classes, setClasses] = useState<{ _id: string; nom: string }[]>([]);
+
   const [formData, setFormData] = useState({
     nom: "",
     prenom: "",
@@ -34,6 +38,23 @@ const AjoutEleve = ({ onSuccess }: { onSuccess?: () => void }) => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [niveauxRes, classesRes] = await Promise.all([
+          getNiveau(),
+          getClasse()
+        ]);
+        setNiveaux(niveauxRes.data);
+        setClasses(classesRes.data);
+      } catch (error) {
+        console.error("Erreur lors du chargement des niveaux ou classes", error);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   return (
     <form onSubmit={handleSubmit} className="w-full max-w-4xl mx-auto bg-white border border-gray-200 rounded-xl shadow-lg p-6 space-y-6">
@@ -68,15 +89,19 @@ const AjoutEleve = ({ onSuccess }: { onSuccess?: () => void }) => {
           <input name="parentContact" value={formData.parentContact} onChange={handleChange} className="w-full border rounded px-3 py-2" />
         </div>
 
-        <div>
-          <label className="block mb-1 text-sm text-gray-600">Niveau</label>
-          <input name="niveau" value={formData.niveau} onChange={handleChange} className="w-full border rounded px-3 py-2" />
-        </div>
-
-        <div>
-          <label className="block mb-1 text-sm text-gray-600">Classe (ID)</label>
-          <input name="classe" value={formData.classe} onChange={handleChange} required className="w-full border rounded px-3 py-2" />
-        </div>
+        <select name="niveau" value={formData.niveau} onChange={handleChange} required className="w-full border rounded px-3 py-2">
+          <option value="">Sélectionner un niveau</option>
+          {niveaux.map((n) => (
+            <option key={n} value={n}>{n}</option>
+          ))}
+        </select>
+        
+        <select name="classe" value={formData.classe} onChange={handleChange} required className="w-full border rounded px-3 py-2">
+          <option value="">Sélectionner une classe</option>
+          {classes.map((c) => (
+            <option key={c._id} value={c._id}>{c.nom}</option>
+          ))}
+        </select>
 
         <div>
           <label className="block mb-1 text-sm text-gray-600">Année scolaire</label>

@@ -95,15 +95,15 @@ exports.getClasseDetails = async (req, res) => {
     const { id } = req.params;
 
     try {
-        const classe = await Classe.findById(id)
-        .populate('enseignant', 'nom email')
-        .populate('eleve', 'nom statut');
+        const classe = await Classe.findById(id).populate('enseignant', 'nom prenom email');
+
+        const eleves = await Eleve.find({ classe: id }).select("nom prenom");
 
         if (!classe) {
             return res.status(404).json({ message: "Classe introuvable" });
         }
 
-        res.status(200).json({ classe });
+        res.status(200).json({ classe, eleves });
     } catch (error) {
         res.status(500).json({ message: "Erreur serveur", erreur: error.message });
     }
@@ -127,6 +127,25 @@ exports.statsElevesParClasse = async (req, res) => {
       console.error("Erreur stats élèves par classe", error.message);
       res.status(500).json({ success: false, message: "Erreur serveur", erreur: error.message });
     }
-  };
+};
   
+exports.getNiveaux = (req, res) => {
+    res.json(["Maternelle", "Primaire", "Collège", "Lycée"]);
+};
+
+exports.getClasses = async (req, res) => {
+    try {
+        const { niveau } = req.query;
+    
+        const filter = niveau ? { niveau } : {};
+        const classes = await Classe.find(filter).select("_id nom niveau");
+    
+        res.json(classes);
+      } catch (error) {
+        res.status(500).json({
+          message: "Erreur lors du chargement des classes",
+          erreur: error.message
+        });
+      }
+};
   

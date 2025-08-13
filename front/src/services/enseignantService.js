@@ -1,6 +1,6 @@
 import api from './api';
 
-export const getEnseignants = (params) => {
-    return api.get('/enseignants', { params });
+export const getEnseignants = () => {
+    return api.get('/users/enseignants');
   };
   

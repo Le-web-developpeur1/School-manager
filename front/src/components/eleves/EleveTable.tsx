@@ -8,6 +8,7 @@ import ModalWrapper from "../modals/ModalWrapper";
 import AjoutEleve from "./AjoutEleve";
 import UpdateEleve from "./UpdateEleve";
 import { Edit, Trash2, Archive } from "lucide-react"; 
+import toast from "react-hot-toast";
 
 type Classe = { nom?: string };
 type Eleve = {
@@ -68,12 +69,25 @@ const EleveTable: React.FC = () => {
     const ok = confirm("Confirmer la suppression de cet élève ?");
     if (!ok) return;
     await deleteEleve(id);
+    toast.success('Éleve supprimé avec succès !');
     fetchEleves();
   };
 
   const handleArchive = async (id: string) => {
-    await archiverEleve(id);
-    fetchEleves();
+    const eleve = eleves.find((e) => e._id === id);
+    if (!eleve) return;
+    const action = eleve.archive ? "restaurer" : "archiver";
+    const ok = confirm(`Confirmer vous que vous voulez ${action} cet élève ?`);
+    if (!ok) return;
+
+    try {
+      await archiverEleve(id);
+      fetchEleves();
+      toast.success(`Élève ${action} avec succès !`);
+    } catch (error) {
+      toast.error(`Erreur lors de la tentative pour ${action} l'élève`);
+      console.error("Erreur d'archivage", error);
+    }
   };
 
   const handleSuccess = () => {
