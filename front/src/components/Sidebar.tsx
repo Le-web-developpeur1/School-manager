@@ -16,7 +16,8 @@ const Sidebar = () => {
 
   const handleLogout = () => {
     logout();
-    navigate('/');
+    localStorage.removeItem('token');
+    navigate('/', { replace: true });
   };
 
   const linkClass = ({ isActive }: { isActive: boolean }) =>

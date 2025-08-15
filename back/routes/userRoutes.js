@@ -10,4 +10,5 @@ router.get('/enseignants', authMiddleware, checkRole(['admin']), userController.
 router.put('/:id', authMiddleware, checkRole(['admin']), userController.updateUser);
 router.put('/:id/toggle-active', authMiddleware, checkRole(['admin']), userController.toogleActivation);
 router.delete('/:id', authMiddleware, checkRole(['admin']), userController.deleteUser);
+
 module.exports = router;

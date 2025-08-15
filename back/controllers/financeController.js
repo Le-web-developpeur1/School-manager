@@ -176,5 +176,3 @@ exports.rechercherEleve = async (req, res) => {
         res.status(500).json({ success: false, message: "Erreur lors de la recherche", erreur: error.message });
     }
 };
-
-
