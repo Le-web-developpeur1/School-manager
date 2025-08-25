@@ -158,6 +158,7 @@ Elle permet de suivre les élèves, les enseignants, les paiements, les statisti
       React + Vite + TS	              Node.js + Express	                  MongoDB + Mongoose
         Tailwind CSS	                   REST API	
 
+```
 # 📁 Structure du projet
 ```
 /Gestion-Scolaire
