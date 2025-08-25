@@ -159,7 +159,7 @@ Elle permet de suivre les élèves, les enseignants, les paiements, les statisti
         Tailwind CSS	                   REST API	
 
 # 📁 Structure du projet
-
+```
 /Gestion-Scolaire
 ├── back/                # Backend Express + Mongoose
 │   ├── config/
