@@ -9,6 +9,7 @@ exports.ajouterEleve = async (req, res) => {
         res.status(201).json(nouvelEleve);
     } catch (error) {
         res.status(500).json({ message: "Erreur lors de l'ajout de l'élève", error});
+        console.error('Une erreur s\'est produite', error);
     }
 };
 

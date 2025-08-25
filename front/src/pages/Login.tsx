@@ -38,7 +38,7 @@ const Login = () => {
       setTimeout(() => {
         toast.error("Email ou mot de passe incorrect");
         setLoading(false);
-      }, 800);
+      }, 1000);
     }
   };
 
@@ -78,7 +78,7 @@ const Login = () => {
           disabled={loading}
           className={`w-full py-2.5 rounded-lg text-white text-sm font-medium transition duration-200 ${
             loading
-              ? "bg-blue-500 opacity-50 cursor-not-allowed"
+              ? "bg-green-700 opacity-50 cursor-not-allowed"
               : "bg-green-900 hover:bg-blue-900"
           } flex items-center justify-center`}
         >
