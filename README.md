@@ -1,9 +1,9 @@
-## 🏫 Gestion-Scolaire
+# 🏫 Gestion-Scolaire
 
 School-manager est une application web complète pour la gestion académique d’un établissement scolaire. 
 Elle permet de suivre les élèves, les enseignants, les paiements, les statistiques et bien plus, avec une interface claire et dynamique.
 
-### 🚀Fonctionnalités Principales
+# 🚀Fonctionnalités Principales
 
 ##    Espace Administrateur
 
@@ -61,11 +61,11 @@ Elle permet de suivre les élèves, les enseignants, les paiements, les statisti
 
    - Accès contrôlé par rôle avec permissions limitées aux données financières
 
-#    Enregistrement des paiements
+###    Enregistrement des paiements
 
    - Ajout manuel d’un paiement par élève : frais d’inscription, mensualités
 
-#    Historique des transactions
+###    Historique des transactions
 
    - Consultation filtrable par élève, date ou classe
 
@@ -85,7 +85,7 @@ Elle permet de suivre les élèves, les enseignants, les paiements, les statisti
 
    - Calcul automatique des totaux encaissés et restant à encaisser
 
-#    Tableau de bord financier
+###   Tableau de bord financier
 
    - Graphiques de suivi : revenus par mois, par classe, ou par type de frais
 
@@ -93,9 +93,9 @@ Elle permet de suivre les élèves, les enseignants, les paiements, les statisti
 
    - Accès uniquement visible par le comptable et l’admin général
 
-###  🔜 Fonctionnalités Futur
+#  🔜 Fonctionnalités Futur
 
-#    Espace enseignant
+##    Espace enseignant
 
     1. Sélection de classe et matière
 
@@ -123,7 +123,7 @@ Elle permet de suivre les élèves, les enseignants, les paiements, les statisti
 
     Prévisualisation du bulletin par matière ou par élève
 
-#  Système de messagerie interne (chat ou support)
+##  Système de messagerie interne (chat ou support)
 
 -   Échanges en temps réel entre administration, enseignants
 
@@ -131,19 +131,19 @@ Elle permet de suivre les élèves, les enseignants, les paiements, les statisti
 
 ##  Développement d'une application mobile
 
-#  Pour l’administration
+###  Pour l’administration
 -   Consultation des tableaux de bord depuis mobile
 
 -   Envoi de notifications urgentes
 
 -   Suivi des paiements reçus et alertes financières
 
-#  Pour les élèves
+###  Pour les élèves
 -   Reçus de paiement téléchargeables
 
 -   Accès rapide à l’emploi du temps et aux notes
 
-#  Pour les enseignants
+###  Pour les enseignants
 -   Saisie des présences quotidienne en un clic
 
 -   Ajout des notes / évaluations par élève
@@ -179,21 +179,21 @@ Elle permet de suivre les élèves, les enseignants, les paiements, les statisti
 │       └── utils/
 └── README.md
 
-## 📦 Installation
+# 📦 Installation
 
-# Cloner le repo
+## Cloner le repo
 git clone https://github.com/Le-web-developpeur1/School-manager
 
-# Backend
+## Backend
 cd back
 npm install
 npm start
 
-# Frontend
+## Frontend
 cd front
 npm install
 npm run dev
 
 
-### 👨🏾‍🏫 Auteur
+# 👨🏾‍🏫 Auteur
 Développée par Boubacar Bah, developpeur web fullStack et mobile, et formateur en développement web.
