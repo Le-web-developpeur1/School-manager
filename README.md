@@ -153,7 +153,7 @@ Elle permet de suivre les élèves, les enseignants, les paiements, les statisti
 -   Accès à leur emploi du temps et aux événements liés
 
 #  🛠️ Stack technique
-
+```
 |------------Frontend----------|------------Backend-------------|----------Base de données-------|
       React + Vite + TS	              Node.js + Express	                  MongoDB + Mongoose
         Tailwind CSS	                   REST API	
