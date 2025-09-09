@@ -11,8 +11,8 @@ type Classe = {
   _id: string;
   nom: string;
   niveau: string;
-  annee: number;
-  enseignant?: { nom: string; prenom: string };
+  anneeScolaire: number;
+  enseignant?: { nom: string, prenom: string };
 };
 
 const ClassList = () => {
@@ -21,14 +21,15 @@ const ClassList = () => {
   const [selectedClasse, setSelectedClasse] = useState<Classe | null>(null);
   const [openForm, setOpenForm] = useState(false);
   const [viewElevesClasseId, setViewElevesClasseId] = useState<string | null>(null);
+  const [fitreNiveau, setFiltreNiveau] = useState("");
+  const [filtreEnseignant, setFiltreEnseignant] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const classesPerPage = 10;
+  const classesPerPage = 8;
 
   useEffect(() => {
     const fetchClasses = async () => {
       try {
         const res = await getClasses();
-        // Selon ton service: res.data contient la liste
         setClasses(res.data);
       } catch {
         toast.error("Erreur chargement des classes");
@@ -39,11 +40,16 @@ const ClassList = () => {
 
   const filtered = classes.filter((c) => {
     const q = query.toLowerCase();
-    return (
+    const matchQuery = 
       c.nom.toLowerCase().includes(q) ||
       c.niveau.toLowerCase().includes(q) ||
-      String(c.annee).includes(q)
-    );
+      String(c.anneeScolaire).includes(q);
+
+    const matchNiveau = fitreNiveau ? c.niveau === fitreNiveau : true;
+    const matchEnseignant = filtreEnseignant ?
+    `${c.enseignant?.nom} ${c.enseignant?.prenom}` === filtreEnseignant : true ;
+
+    return matchQuery && matchNiveau && matchEnseignant
   });
 
   const totalPages = Math.ceil(filtered.length / classesPerPage);
@@ -112,6 +118,37 @@ const ClassList = () => {
             )}
           </div>
         </div>
+        <div className="flex flex-col sm:flex-row gap-4 px-6 pb-4">
+          <select 
+            value={fitreNiveau}
+            onChange={(e) => {
+              setFiltreNiveau(e.target.value);
+              setCurrentPage(1);
+            }}
+            className="rounded-lg border border-gray-300 bg-white px-2.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+            <option value="">Tous les niveaux</option>
+            {[...new Set(classes.map(c => c.niveau))].map(n => (
+              <option key={n} value={n}>{n}</option>
+            ))}
+          </select>
+
+          <select 
+            value={filtreEnseignant}
+            onChange={(e) => {
+              setFiltreEnseignant(e.target.value);
+              setCurrentPage(1);
+            }}
+            className="rounded-lg border border-gray-300 bg-white px-2.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+             <option value="">Tous les enseignants</option>
+              {[...new Set(classes.map(c => c.enseignant?.nom + " " + c.enseignant?.prenom))]
+                .filter(Boolean)
+                .map((ens, i) => (
+                  <option key={i} value={ens}>{ens}</option>
+              ))}
+          </select>
+        </div>
 
         {/* Tableau */}
         <div className="relative overflow-x-auto">
@@ -156,7 +193,7 @@ const ClassList = () => {
                       </td>
                       <td className="px-6 py-3 font-medium text-gray-900">{classe.nom}</td>
                       <td className="px-6 py-3 text-gray-700">{classe.niveau}</td>
-                      <td className="px-6 py-3 text-gray-700">{classe.annee}</td>
+                      <td className="px-6 py-3 text-gray-700">{classe.anneeScolaire}</td>
                       <td className="px-6 py-3 text-gray-700">{teacher}</td>
                       <td className="px-6 py-2">
                         <div className="flex items-center justify-end gap-1.5">

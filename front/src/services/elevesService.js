@@ -29,14 +29,3 @@ export const getElevesParClasse = () => {
     return api.get('/eleves-par-classe');
 };
 
-export const rechercherEleve = async (query) => {
-    try {
-      const res = await api.get(`/paiements/recherche-eleve`, {
-        params: { q: query },
-      });
-      return res.data.resultats;
-    } catch (error) {
-      console.error('Erreur recherche élève:', error.message);
-      return [];
-    }
-  };

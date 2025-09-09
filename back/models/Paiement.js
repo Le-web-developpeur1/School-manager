@@ -53,7 +53,24 @@ const paiementSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true
-  }
+  },
+  modePaiement: {
+    type: String,
+    enum: ['Espèces', 'Mobile Money', 'Virement', 'Chèque'],
+    default: 'Espèces'
+  },
+  payeur: {
+    type: String,
+    trim: true
+  },
+  justificatifUrl: {
+    type: String,
+    trim: true
+  },
+  verifie: {
+    type: Boolean,
+    default: true
+  }  
 }, {
   timestamps: true 
 });

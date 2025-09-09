@@ -17,7 +17,7 @@ export const updateClasse = (id, data) => {
 };
 
 export const deleteClasse = (id) => {
-    return api.delete(`/eleves/${id}`);
+    return api.delete(`/classes/${id}`);
 };
 
 export const getNiveau = () => {

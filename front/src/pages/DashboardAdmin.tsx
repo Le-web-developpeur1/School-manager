@@ -29,12 +29,8 @@ const DashboardAdmin = () => {
   useEffect(() => {
     (async () => {
       try {
-        const res = await getStatsGlobal();
-        setStats({
-          totalEleves: res.data.totalEleves,
-          totalEnseignants: res.data.totalEnseignants,
-          montantTotal: res.data.montantTotal,
-        });
+        const data = await getStatsGlobal();
+        setStats(data);
       } catch (err) {
         console.error('Erreur chargement stats', err);
       }
@@ -120,16 +116,16 @@ const DashboardAdmin = () => {
         </div>
 
         {/* Grille des graphiques */}
-<div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-2">
-  <GraphBar data={graphData} />
-  <GraphElevesParClasse />
-</div> 
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-2">
+          <GraphBar data={graphData} />
+          <GraphElevesParClasse />
+        </div> 
 
-<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-  <NiveauPieChart data={niveauData} />
-  <RepartitionSexe data={sexeData} />
-  <RatioSTChart data={ratioData} />
-</div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <NiveauPieChart data={niveauData} />
+          <RepartitionSexe data={sexeData} />
+          <RatioSTChart data={ratioData} />
+        </div>
       </main>
     </div>
   );

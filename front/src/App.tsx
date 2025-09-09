@@ -7,6 +7,7 @@ import ClassePage from './pages/ClassePage';
 import ElevePage from './pages/ElevePage';
 import MatieresPage from './pages/MatieresPage';
 import DashboardComptable from './pages/DashboardComptable';
+import PaiementsPage from './pages/PaiementsPage';
 
 
 
@@ -17,6 +18,7 @@ const AppRouter = () => {
             <Route path="/" element={<Login />} />
             <Route path="/admin" element={<DashboardAdmin/>} />
             <Route path="/comptable" element={<DashboardComptable/>} />
+            <Route path="/paiements" element={<PaiementsPage/>} />
             <Route path="/sidebar" element={<Sidebar/>} />
             <Route path="/admin/users" element={<UserPage />} />
             <Route path='/classes' element={<ClassePage/>} />

@@ -3,22 +3,35 @@ const Eleve = require('../models/Eleve');
 
 exports.createClasse = async (req, res) => {
     try {
-        const { nom, niveau, anneeScolaire, enseignant } = req.body;
-        const nouvelleClasse = new Classe({ nom, niveau, anneeScolaire, enseignant });
-        await nouvelleClasse.save();
-        res.status(201).json(nouvelleClasse);
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: "Erreur lors de la création de la classe",
-            erreur: err.message
+      const { nom, niveau, anneeScolaire, enseignant } = req.body;
+  
+      if (!nom || !niveau || !anneeScolaire) {
+        return res.status(400).json({
+          success: false,
+          message: "Champs obligatoires manquants",
         });
+      }
+  
+      console.log("Payload reçu:", req.body);
+  
+      const nouvelleClasse = new Classe({ nom, niveau, anneeScolaire, enseignant });
+      await nouvelleClasse.save();
+  
+      res.status(201).json(nouvelleClasse);
+    } catch (error) {
+      console.error("Erreur création classe:", error);
+      res.status(500).json({
+        success: false,
+        message: "Erreur lors de la création de la classe",
+        erreur: error.message,
+      });
     }
-};
+  };
+  
 
 exports.listerClasses = async (req, res) => {
     try {
-        const classes = await Classe.find();
+        const classes = await Classe.find().populate('enseignant', 'nom prenom');
         res.status(200).json(classes);
     } catch (err) {
         res.status(500).json({ message: "Erreur lors de la récupération des classes" });

@@ -17,8 +17,9 @@ type Enseignant = {
 const AjoutClasse = ({ onClose }: Props) => {
   const [nom, setNom] = useState("");
   const [niveaux, setNiveaux] = useState<string[]>([]);
-  const [annee, setAnnee] = useState<number | "">("");
-  const [enseignantId, setEnseignantId] = useState("");
+  const [niveau, setNiveau] = useState<string>("");
+  const [anneeScolaire, setAnneeScorlaire] = useState<number | "">("");
+  const [enseignant, setEnseignant] = useState("");
   const [enseignants, setEnseignants] = useState<Enseignant[]>([]);
 
   useEffect(() => {
@@ -39,13 +40,13 @@ const AjoutClasse = ({ onClose }: Props) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!nom || !annee) {
+    if (!nom || !anneeScolaire) {
       toast.error("Tous les champs sauf enseignant sont obligatoires");
       return;
     }
 
     try {
-      await createClasse({ nom, niveaux, annee: Number(annee), enseignantId });
+      await createClasse({ nom, niveau, anneeScolaire: Number(anneeScolaire), enseignant });
       toast.success("Classe ajoutée !");
       onClose();
     } catch (err) {
@@ -66,27 +67,27 @@ const AjoutClasse = ({ onClose }: Props) => {
             className="w-full border px-3 py-2 rounded"
           />
           <select
-              value={niveaux}
-              onChange={(e) => setNiveaux(e.target.value)}
-              required
-              className="w-full border px-3 py-2 rounded"
+            value={niveau}
+            onChange={(e) => setNiveau(e.target.value)}
+            required
+            className="w-full border px-3 py-2 rounded"
           >
-              <option value="">-- Sélectionner un niveau --</option>
-              {niveaux.map((n) => (
-                <option key={n} value={n}>{n}</option>
-              ))}
+            <option value="">-- Sélectionner un niveau --</option>
+            {niveaux.map((n) => (
+              <option key={n} value={n}>{n}</option>
+            ))}
           </select>
           <input
             type="number"
             placeholder="Année scolaire"
-            value={annee}
-            onChange={(e) => setAnnee(e.target.value === "" ? "" : Number(e.target.value))}
+            value={anneeScolaire}
+            onChange={(e) => setAnneeScorlaire(e.target.value === "" ? "" : Number(e.target.value))}
             className="w-full border px-3 py-2 rounded"
           />
 
           <select
-            value={enseignantId}
-            onChange={(e) => setEnseignantId(e.target.value)}
+            value={enseignant}
+            onChange={(e) => setEnseignant(e.target.value)}
             className="w-full border px-3 py-2 rounded"
           >
             <option value="">-- Sélectionner un enseignant --</option>

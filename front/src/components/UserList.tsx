@@ -21,8 +21,10 @@ const UserList = () => {
   const [query, setQuery] = useState("");
   const [openForm, setOpenForm] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [filtreRole, setFiltreRole] = useState("");
+
   const [currentPage, setCurrentPage] = useState(1);
-  const usersPerPage = 9;
+  const usersPerPage = 8;
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -36,11 +38,16 @@ const UserList = () => {
     fetchUsers();
   }, []);
 
-  const filtered = users.filter(
-    (u) =>
+  const filtered = users.filter((u) => {
+    const matchQuery =
       `${u.prenom} ${u.nom}`.toLowerCase().includes(query.toLowerCase()) ||
-      u.email.toLowerCase().includes(query.toLowerCase())
-  );
+      u.email.toLowerCase().includes(query.toLowerCase());
+  
+    const matchRole = filtreRole ? u.role === filtreRole : true;
+  
+    return matchQuery && matchRole;
+  });
+  
 
   const totalPages = Math.ceil(filtered.length / usersPerPage);
   const paginatedUsers = filtered.slice(
@@ -120,6 +127,21 @@ const UserList = () => {
                 </button>
               )}
             </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <select
+              value={filtreRole}
+              onChange={(e) => {
+                setFiltreRole(e.target.value);
+                setCurrentPage(1);
+              }}
+              className="rounded-lg border border-gray-300 bg-white px-2.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 mt-2"
+            >
+              <option value="">Tous les rôles</option>
+              {[...new Set(users.map(u => u.role))].map((role, i) => (
+                <option key={i} value={role}>{role}</option>
+              ))}
+            </select>
           </div>
         </div>
 
@@ -258,6 +280,4 @@ const UserList = () => {
   );
 };
 
-export default UserList;
-
-       
+export default UserList;    

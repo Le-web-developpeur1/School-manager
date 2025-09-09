@@ -42,6 +42,14 @@ const EleveTable: React.FC = () => {
   const [showAddForm, setShowAddForm] = useState(false);
   const [selectedEleveId, setSelectedEleveId] = useState<string | null>(null);
 
+  const [filtreClasse, setFiltreClasse] = useState("");
+
+  const elevesFiltres = eleves.filter(e => {
+    if (!filtreClasse) return true;
+    return e.classe?.nom === filtreClasse;
+  });
+  
+
   const fetchEleves = async () => {
     setLoading(true);
     try {
@@ -104,9 +112,9 @@ const EleveTable: React.FC = () => {
       <div className="px-6 py-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h2 className="text-xl sm:text-2xl font-semibold text-gray-900">🧑‍🎓 Gestion des Elèves</h2>
-          <p className="text-sm text-gray-500">
+          {/* <p className="text-sm text-gray-500">
             Gérez les inscriptions, états et classes en un clin d’œil.
-          </p>
+          </p> */}
         </div>
         <button
           onClick={() => setShowAddForm(true)}
@@ -158,6 +166,21 @@ const EleveTable: React.FC = () => {
               <option value={50}>50</option>
             </select>
           </div>
+        </div>
+        <div className="flex items-center gap-2">
+          <select
+            value={filtreClasse}
+            onChange={(e) => {
+              setFiltreClasse(e.target.value);
+              setPage(1);
+            }}
+            className="rounded-lg border border-gray-300 bg-white px-2.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 mt-2"
+          >
+            <option value="">Toutes les classes</option>
+            {[...new Set(eleves.map(e => e.classe?.nom).filter(Boolean))].map((nom, i) => (
+              <option key={i} value={nom}>{nom}</option>
+            ))}
+          </select>
         </div>
       </div>
 
@@ -219,7 +242,7 @@ const EleveTable: React.FC = () => {
             )}
 
             {!loading &&
-              eleves.map((eleve, index) => (
+              elevesFiltres.map((eleve, index) => (
                 <tr key={eleve._id} className="odd:bg-white even:bg-gray-50">
                   <td className="px-6 py-4 text-gray-700">
                     {startIndex + index + 1}
@@ -307,16 +330,16 @@ const EleveTable: React.FC = () => {
 
       {/* Formulaires dynamiques */}
       {showAddForm && (
-  <ModalWrapper onClose={() => setShowAddForm(false)}>
-    <AjoutEleve onSuccess={handleSuccess} />
-  </ModalWrapper>
-)}
+          <ModalWrapper onClose={() => setShowAddForm(false)}>
+            <AjoutEleve onSuccess={handleSuccess} />
+          </ModalWrapper>
+      )}
 
-{selectedEleveId && (
-  <ModalWrapper onClose={() => setSelectedEleveId(null)}>
-    <UpdateEleve id={selectedEleveId} onSuccess={handleSuccess} />
-  </ModalWrapper>
-)}
+      {selectedEleveId && (
+        <ModalWrapper onClose={() => setSelectedEleveId(null)}>
+          <UpdateEleve id={selectedEleveId} onSuccess={handleSuccess} />
+        </ModalWrapper>
+      )}
 
 
     </div>

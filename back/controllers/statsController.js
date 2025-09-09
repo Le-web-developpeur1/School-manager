@@ -1,72 +1,102 @@
 const Eleve = require('../models/Eleve');
 const User = require('../models/User');
 const Paiement = require('../models/Paiement');
+const mongoose = require('mongoose');
 
 exports.getStats = async (req, res) => {
     try {
-        const totalEleves = await Eleve.countDocuments({archive: false});
+        // Stats globales sur les élèves et enseignants
+        const totalEleves = await Eleve.countDocuments({ archive: false });
         const totalEnseignants = await User.countDocuments({ role: 'enseignant' });
-        
-        const paiements = await Paiement.aggregate([
-            {
-                $group: {
-                    _id: null,
-                    montantTotal: { $sum: '$montant' }
-                }
-            }
-        ]);
 
-        const montantTotal = paiements[0]?.montantTotal || 0;
+        // Filtre de base pour les paiements
+        const filtrePaiement = { statut: { $ne: 'Annulé' } };
+
+        // 🔒 Si c'est un comptable, on filtre par son ID
+        if (req.user.role === 'comptable') {
+            filtrePaiement.comptable = new mongoose.Types.ObjectId(req.user.id)
+        }
+
+        // Total encaissé
+        const totalEncaisséAgg = await Paiement.aggregate([
+            { $match: filtrePaiement },
+            { $group: { _id: null, total: { $sum: "$montant" } } }
+        ]);
+        const montantTotal = totalEncaisséAgg[0]?.total || 0;
+
+        // Encaissement du mois en cours
+        const debutMois = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+        const encaissementMoisAgg = await Paiement.aggregate([
+            { $match: { ...filtrePaiement, datePaiement: { $gte: debutMois } } },
+            { $group: { _id: null, total: { $sum: "$montant" } } }
+        ]);
+        const encaissementMois = encaissementMoisAgg[0]?.total || 0;
+
+        // Nombre de paiements
+        const nombrePaiements = await Paiement.countDocuments(filtrePaiement);
+
+        // Répartition par motif
+        const repartitionMotif = await Paiement.aggregate([
+            { $match: filtrePaiement },
+            { $group: { _id: "$motif", total: { $sum: "$montant" } } }
+        ]);
 
         res.status(200).json({
             totalEleves,
             totalEnseignants,
-            montantTotal
+            montantTotal,
+            encaissementMois,
+            nombrePaiements,
+            repartitionMotif
         });
+
     } catch (error) {
-        console.error('Erreur lors de chargement des statistiques', error);
+        console.error('Erreur lors du chargement des statistiques', error);
         res.status(500).json({ message: "Erreur serveur", erreur: error.message });
     }
 };
 
+
 exports.getEncaissementsMensuels = async (req, res) => {
     try {
+        const filtre = { statut: { $ne: 'Annulé' } };
 
-      const encaissements = await Paiement.aggregate([
-        {
-          $match: { 
-            datePaiement: {
-                $gte: new Date("2025-01-01"),
-                $lte: new Date("2025-12-31")
-            }
-         }
-        },
-        {
-          $group: {
-            _id: { $month: "$datePaiement" },
-            montant: { $sum: "$montant" }
-          }
-        },
-        { $sort: { _id: 1 } }
-      ]);
-  
-      const moisLabels = [
-        "Janvier", "Février", "Mars", "Avril", "Mai", "Juin",
-        "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"
-      ];
-  
-      const resultArray = moisLabels.map((mois, index) => {
-        const found = encaissements.find(({ _id }) => _id === index + 1);
-        return { mois, montant: found ? found.montant : 0 };
-      });
-  
-      console.log("Encaissements mensuels:", resultArray);
-      res.status(200).json(resultArray);
+        if (req.user.role === 'comptable') {
+            filtre.comptable = new mongoose.Types.ObjectId(req.user.id);;
+        }
+
+        const encaissements = await Paiement.aggregate([
+            { $match: { 
+                ...filtre,
+                datePaiement: {
+                    $gte: new Date("2025-01-01"),
+                    $lte: new Date("2025-12-31")
+                }
+            }},
+            { $group: {
+                _id: { $month: "$datePaiement" },
+                montant: { $sum: "$montant" }
+            }},
+            { $sort: { _id: 1 } }
+        ]);
+
+        const moisLabels = [
+            "Janvier", "Février", "Mars", "Avril", "Mai", "Juin",
+            "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"
+        ];
+
+        const resultArray = moisLabels.map((mois, index) => {
+            const found = encaissements.find(({ _id }) => _id === index + 1);
+            return { mois, montant: found ? found.montant : 0 };
+        });
+        
+        console.log("Encaissements mensuels:", resultArray);
+        res.status(200).json(resultArray);
     } catch (err) {
-      console.error("Erreur encaissements mensuels:", err);
-      res.status(500).json({ message: "Erreur serveur" });
+        res.status(500).json({ message: "Erreur serveur", erreur: err.message });
     }
-  };
+};
+
   
 
 exports.getRepartitionParNiveau = async (req, res) => {
@@ -113,3 +143,35 @@ exports.getRepartitionSexe = async (req, res) => {
         res.status(500).json({ message: "Erreur serveur" });
     }
 };
+
+exports.repartitionMotif = async (req, res) => {
+    try {
+      const filtre = { statut: { $ne: 'Annulé' } };
+  
+      if (req.user.role === 'comptable') {
+        filtre.comptable = new mongoose.Types.ObjectId(req.user.id);
+      }
+  
+      const repartition = await Paiement.aggregate([
+        { $match: filtre },
+        {
+          $group: {
+            _id: "$motif",
+            montant: { $sum: "$montant" }
+          }
+        },
+        { $sort: { montant: -1 } }
+      ]);
+  
+      // Formatage pour le front
+      const result = repartition.map(r => ({
+        motif: r._id,
+        montant: r.montant
+      }));
+  
+      res.status(200).json({ success: true, data: result });
+    } catch (error) {
+      res.status(500).json({ success: false, message: "Erreur stats motifs", erreur: error.message });
+    }
+  };
+  
