@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { createEleve } from "../../services/elevesService";
 import { getNiveau, getClasse } from "../../services/classeService";
+import toast from "react-hot-toast";
 
 const AjoutEleve = ({ onSuccess }: { onSuccess?: () => void }) => {
   const [niveaux, setNiveaux] = useState<string[]>([]);
@@ -32,6 +33,7 @@ const AjoutEleve = ({ onSuccess }: { onSuccess?: () => void }) => {
     try {
       await createEleve(formData);
       if (onSuccess) onSuccess();
+      toast.success("Élève enregistré avec succès !")
     } catch (err: any) {
       setError(err.response?.data?.message || "Erreur lors de l'ajout");
     } finally {
@@ -47,7 +49,7 @@ const AjoutEleve = ({ onSuccess }: { onSuccess?: () => void }) => {
           getClasse()
         ]);
         setNiveaux(niveauxRes.data);
-        setClasses(classesRes.data);
+        setClasses(classesRes);
       } catch (error) {
         console.error("Erreur lors du chargement des niveaux ou classes", error);
       }

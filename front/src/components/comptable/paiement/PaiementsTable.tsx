@@ -1,10 +1,13 @@
 import { useEffect, useState } from "react";
 import { listerPaiements, annulerPaiement} from "../../../services/paiementsService";
+import { getClasse } from "../../../services/classeService";
 import toast from "react-hot-toast";
-import { Search, X, Edit, Trash2 } from "lucide-react";
+import { Search, X, Edit, Trash2, FileText } from "lucide-react";
 import ModifierPaiementForm from "./ModifierPaiementForm";
 import ModalWrapper from "../../modals/ModalWrapper";
 import FormPaiement from "./FormPaiement";
+import ReleveEleve from "./ReleveEleve";
+import StatsClasse from "./StatsClasse";
 
 type Paiement = {
   _id: string;
@@ -15,7 +18,6 @@ type Paiement = {
   modePaiement: string;
   datePaiement: string;
   statut?: string;
-  justificatifUrl: string;
 };
 
 const PaiementsTable = () => {
@@ -26,8 +28,13 @@ const PaiementsTable = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const paiementsPerPage = 9;
   const [formVisible, setFormVisible] = useState(false);
+  const [releveVisible, setReleveVisible] = useState(false);
+  const [eleveIdReleve, setEleveIdReleve] = useState<string | null>(null);
+  const [classes, setClasses] = useState<{ _id: string; nom: string }[]>([]);
+  const [classeSelectionnee, setClasseSelectionnee] = useState<string | null>(null);
+  const [statsVisible, setStatsVisible] = useState(false);
 
-
+  
   const fetchPaiements = async () => {
     try {
       const data = await listerPaiements(filtre);
@@ -42,6 +49,14 @@ const PaiementsTable = () => {
     fetchPaiements();
   }, [filtre]);
 
+  useEffect(() => {
+    const chargerClasses = async () => {
+      const data = await getClasse();
+      setClasses(Array.isArray(data) ? data : []);
+    };
+    chargerClasses();
+  }, []);
+  
   const filtered = paiements
     .filter((p) => p.statut != "Annulé")
     .filter((p) => {
@@ -66,9 +81,6 @@ const PaiementsTable = () => {
     }
   };
 
-  
-  
-
   const totalPages = Math.ceil(filtered.length / paiementsPerPage);
   const paginatedPaiements = filtered.slice(
     (currentPage - 1) * paiementsPerPage,
@@ -88,7 +100,11 @@ const PaiementsTable = () => {
             </div>
           </div>
         )}
-
+        {releveVisible && eleveIdReleve && (
+          <ModalWrapper onClose={() => setReleveVisible(false)}>
+            <ReleveEleve id={eleveIdReleve} />
+          </ModalWrapper>
+        )}
          {/* Modale pour le formulaire */}
          {formVisible && (
           <ModalWrapper onClose={() => setFormVisible(false)}>
@@ -104,7 +120,7 @@ const PaiementsTable = () => {
 
       <div className="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden">
         {/* Header */}
-        <div className="px-6 pt-5">
+        <div className="px-6 pt-3">
           <div className="flex items-center justify-between mb-6">
             <h1 className="text-xl font-semibold text-gray-800">📂 Paiements</h1>
             <button
@@ -161,6 +177,27 @@ const PaiementsTable = () => {
             >
             Tous les paiements
          </button>
+         <div className="w-full sm:max-w-xs">
+            <select
+              value={classeSelectionnee ?? ""}
+              onChange={(e) => {
+                const id = e.target.value;
+                  if (id) {
+                  setClasseSelectionnee(id);
+                  setStatsVisible(true);
+                }
+              }}
+              className=" px-3 py-2 border rounded-lg text-sm"
+            >
+              <option value="">Sélectionner une classe</option>
+              {classes.map((c) => (
+                <option key={c._id} value={c._id}>
+                  {c.nom}
+                </option>
+              ))}
+            </select>
+          </div>
+
 
           {/* Search */}
           <div className="relative w-full sm:max-w-md ml-auto">
@@ -249,16 +286,19 @@ const PaiementsTable = () => {
                     >
                         <Trash2 className="w-4 h-4" />
                     </button>
-                        {p.justificatifUrl && (
-                          <a
-                            href={p.justificatifUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-xs text-blue-600 hover:underline"
-                          >
-                            Voir le reçu
-                          </a>
-                        )}
+                    <button
+                      onClick={() => {
+                        if (p.eleve?._id) {
+                          setEleveIdReleve(p.eleve._id);
+                          setReleveVisible(true);
+                        }
+                      }}
+                      className="text-blue-600 hover:text-blue-800 ml-3"
+                      title="Voir le relevé"
+                    >
+                      <FileText className="w-4 h-4" />
+                    </button>
+
                     </td>
                   </tr>
                 ))
@@ -305,6 +345,12 @@ const PaiementsTable = () => {
           </div>
         )}
       </div>
+      {statsVisible && classeSelectionnee && (
+        <ModalWrapper onClose={() => setStatsVisible(false)}>
+          <StatsClasse classeId={classeSelectionnee} />
+        </ModalWrapper>
+      )}
+
     </div>
   );
 };

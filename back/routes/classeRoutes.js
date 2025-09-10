@@ -8,9 +8,9 @@ router.post('/', authMiddleware, checkRole(['admin']), classeController.createCl
 router.get('/', authMiddleware, checkRole(['admin']), classeController.listerClasses);
 router.put('/:id', authMiddleware, checkRole(['admin']), classeController.modiferClasses);
 router.delete('/:id', authMiddleware, checkRole(['admin']), classeController.supprimeClasse);
-router.get('/:id/details', authMiddleware, checkRole(['admin', 'comptable']), classeController.getClasseDetails);
-router.get('/niveaux', authMiddleware, checkRole(['admin']), classeController.getNiveaux);
-router.get('/', authMiddleware, checkRole(['admin']), classeController.getClasses);
+router.get('/:id/details', authMiddleware, checkRole(['admin','comptable']), classeController.getClasseDetails);
+router.get('/niveaux', authMiddleware, checkRole(['admin','comptable']), classeController.getNiveaux);
+router.get('/classe', authMiddleware, checkRole(['admin','comptable']), classeController.getClasses);
 
 
 module.exports = router;

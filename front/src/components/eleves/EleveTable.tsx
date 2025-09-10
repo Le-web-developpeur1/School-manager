@@ -36,7 +36,7 @@ const EleveTable: React.FC = () => {
 
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [limit, setLimit] = useState(10);
+  const [limit, setLimit] = useState(7);
 
   const [loading, setLoading] = useState(false);
   const [showAddForm, setShowAddForm] = useState(false);

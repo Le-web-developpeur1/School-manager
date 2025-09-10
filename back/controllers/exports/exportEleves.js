@@ -3,7 +3,7 @@ const Eleve = require('../../models/Eleve');
 
 exports.exporterListeEleves = async (req, res) => {
   try {
-    const eleves = await Eleve.find();
+    const eleves = await Eleve.find().populate('classe', 'nom niveau');
 
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet('Liste des élèves');
@@ -16,8 +16,16 @@ exports.exporterListeEleves = async (req, res) => {
       { header: 'Sexe', key: 'sexe', width: 10 },
     ];
 
-    eleves.forEach(eleve => worksheet.addRow(eleve));
-
+    eleves.forEach(eleve => {
+      worksheet.addRow({
+        nom: eleve.nom,
+        prenom: eleve.prenom,
+        matricule: eleve.matricule,
+        classe: eleve.classe?.nom || '—',
+        sexe: eleve.sexe
+      });
+    });
+    
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     res.setHeader('Content-Disposition', 'attachment; filename=eleves.xlsx');
     await workbook.xlsx.write(res);

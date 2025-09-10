@@ -24,10 +24,13 @@ export const getNiveau = () => {
     return api.get('/classes/niveaux');
 };
 
-export const getClasse = () => {
-    return api.get('/classes');
+export const getClasse =  async () => {
+    const res = await api.get('/classes/classe');
+    return res.data;
 };
 
-export const getClasseDetails = (id) =>
-    api.get(`/classes/${id}/details`);
+export const getClasseDetails = (id) => {
+    return api.get(`/classes/${id}/details`);
+};
+    
   
