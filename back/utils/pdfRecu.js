@@ -35,7 +35,7 @@ const genereRecuPDF = (paiement, res) => {
       ["Date", new Date(paiement.datePaiement).toLocaleDateString()],
       ["Élève", `${paiement.eleve?.nom || "—"} ${paiement.eleve?.prenom || "—"}`],
       ["Matricule", paiement.eleve?.matricule || "—"],
-      ["Classe", paiement.eleve?.classe?.nom || "—"],
+      ["Classe", paiement.classe?.nom || "—"],
       ["Mois", paiement.mois || "—"],
       ["Motif", paiement.motif || "—"],
       ["Mode de paiement", paiement.modePaiement || "—"],
@@ -52,7 +52,7 @@ const genereRecuPDF = (paiement, res) => {
     doc.moveDown(1.5);
     doc.font("Helvetica-Bold").text("Comptable", { align: "right" });
     doc.moveDown(0.3);
-    doc.font("Helvetica").text(`${paiement.comptable?.nom || "—"} ${paiement.comptable?.prenom || ""}`, { align: "right" });
+    doc.font("Helvetica").text(`${paiement.comptable?.prenom || "—"} ${paiement.comptable?.nom || ""}`, { align: "right" });
     doc.moveDown(1.5);
 
     // 🔹 Ligne de séparation

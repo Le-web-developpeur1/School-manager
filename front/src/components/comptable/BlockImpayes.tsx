@@ -18,18 +18,27 @@ const BlocImpayes = () => {
 
   useEffect(() => {
     const charger = async () => {
-      const data = await getImpayes();
-      if (data) {
-        setImpayes(data.liste || []);
-        setTotal(data.totalImpayes || 0);
-        setMois(data.moisActuel || "");
-        setAnneeScolaire(data.anneeScolaire || "");
+      try {
+        const data = await getImpayes();
+        if (data) {
+          setImpayes(data.liste || []);
+          setTotal(data.totalImpayes || 0);
+          setMois(data.moisActuel || "");
+          setAnneeScolaire(data.anneeScolaire || "");
+        }
+      } catch (error) {
+        console.error("Erreur chargement impayés:", error);
+        setImpayes([]);
+        setTotal(0);
+        setMois("");
+        setAnneeScolaire("");
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
     charger();
   }, []);
-
+  
   return (
     <div className="bg-white rounded-lg shadow p-4 mt-3">
       <h3 className="text-md font-semibold mb-4 bg-gradient-to-r from-red-500 to-pink-500 text-white px-3 py-2 rounded">

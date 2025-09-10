@@ -76,15 +76,27 @@ export const getTotalParClasse = async (classeId, params = {}) => {
 };
 
 export const getImpayes = async () => {
-  const res = await api.get('/paiements/impayes');
-  return res.data;
+  try {
+    const res = await api.get('/paiements/impayes');
+    return res.data;
+  } catch (error) {
+    console.error("Erreur getImpayes:", error);
+    throw error; // pour que le composant puisse gérer l'erreur
+  }
 };
+
 
 
 export const getRepartitionModesPaiement = async () => {
-  const res = await api.get('/paiements/repartition-modes');
-  return res.data.data || [];
+  try {
+    const res = await api.get('/paiements/repartition-modes');
+    return res.data.data || [];
+  } catch (error) {
+    console.error("Erreur getRepartitionModesPaiement:", error);
+    return []; // fallback vide pour éviter le crash du composant
+  }
 };
+
 
 export const rechercherEleve = async (query) => {
   try {

@@ -6,6 +6,10 @@ const paiementSchema = new mongoose.Schema({
     ref: 'Eleve',
     required: true
   },
+  classe: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Classe",
+  },
   montant: {
     type: Number,
     required: true,

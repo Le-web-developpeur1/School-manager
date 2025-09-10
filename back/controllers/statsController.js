@@ -90,7 +90,6 @@ exports.getEncaissementsMensuels = async (req, res) => {
             return { mois, montant: found ? found.montant : 0 };
         });
         
-        console.log("Encaissements mensuels:", resultArray);
         res.status(200).json(resultArray);
     } catch (err) {
         res.status(500).json({ message: "Erreur serveur", erreur: err.message });

@@ -1,7 +1,10 @@
 import { useEffect, useState } from "react";
-import { listerPaiements } from "../../../services/paiementsService";
+import { listerPaiements, annulerPaiement} from "../../../services/paiementsService";
 import toast from "react-hot-toast";
-import { Search, X } from "lucide-react";
+import { Search, X, Edit, Trash2 } from "lucide-react";
+import ModifierPaiementForm from "./ModifierPaiementForm";
+import ModalWrapper from "../../modals/ModalWrapper";
+import FormPaiement from "./FormPaiement";
 
 type Paiement = {
   _id: string;
@@ -12,14 +15,18 @@ type Paiement = {
   modePaiement: string;
   datePaiement: string;
   statut?: string;
+  justificatifUrl: string;
 };
 
 const PaiementsTable = () => {
   const [paiements, setPaiements] = useState<Paiement[]>([]);
+  const [paiementAModifier, setPaiementAModifier] = useState<any | null>(null);
   const [query, setQuery] = useState("");
   const [filtre, setFiltre] = useState<{ jour?: boolean; semaine?: boolean }>({ jour: true });
   const [currentPage, setCurrentPage] = useState(1);
   const paiementsPerPage = 9;
+  const [formVisible, setFormVisible] = useState(false);
+
 
   const fetchPaiements = async () => {
     try {
@@ -46,6 +53,22 @@ const PaiementsTable = () => {
     );
   });
 
+  const handleAnnuler = async (id: string) => {
+    const confirm = window.confirm("Voulez-vous vraiment annuler ce paiement ?");
+    if (!confirm) return;
+  
+    try {
+      await annulerPaiement(id);
+      toast.success("Paiement annulé avec succès");
+      fetchPaiements(); // recharge la liste
+    } catch {
+      toast.error("Erreur lors de l'annulation du paiement");
+    }
+  };
+
+  
+  
+
   const totalPages = Math.ceil(filtered.length / paiementsPerPage);
   const paginatedPaiements = filtered.slice(
     (currentPage - 1) * paiementsPerPage,
@@ -54,15 +77,49 @@ const PaiementsTable = () => {
 
   return (
     <div className="w-full min-h-screen">
+       {paiementAModifier && (
+          <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg shadow-lg w-full max-w-lg p-6">
+              <ModifierPaiementForm
+                paiement={paiementAModifier}
+                onClose={() => setPaiementAModifier(null)}
+                onRefresh={fetchPaiements}
+              />
+            </div>
+          </div>
+        )}
+
+         {/* Modale pour le formulaire */}
+         {formVisible && (
+          <ModalWrapper onClose={() => setFormVisible(false)}>
+            <FormPaiement
+              onClose={() => setFormVisible(false)}
+              onSuccess={() => {
+                setFormVisible(false);
+                // Tu peux recharger la liste des paiements ici si besoin
+              }}
+            />
+          </ModalWrapper>
+        )}
+
       <div className="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden">
         {/* Header */}
-        <div className="px-6 py-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div>
+        <div className="px-6 pt-5">
+          <div className="flex items-center justify-between mb-6">
+            <h1 className="text-xl font-semibold text-gray-800">📂 Paiements</h1>
+            <button
+              onClick={() => setFormVisible(true)}
+              className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700"
+            >
+              + Effectuer un paiement
+            </button>
+          </div>
+
+          <div className="mb-4">
             <h2 className="text-xl sm:text-2xl font-semibold text-gray-900">💳 Paiements enregistrés</h2>
             <p className="text-sm text-gray-500">Filtrez les paiements par période ou par élève.</p>
           </div>
         </div>
-
         {/* Filtres */}
         <div className="px-6 pb-4 flex flex-wrap gap-3 items-center">
           <button
@@ -147,6 +204,7 @@ const PaiementsTable = () => {
                 <th className="px-6 py-3">Motif</th>
                 <th className="px-6 py-3">Mode</th>
                 <th className="px-6 py-3">Date</th>
+                <th className="px-6 py-3">Statut</th>
                 <th className="px-6 py-3">Actions</th>
               </tr>
             </thead>
@@ -169,6 +227,39 @@ const PaiementsTable = () => {
                     <td className="px-6 py-3">{p.motif}</td>
                     <td className="px-6 py-3">{p.modePaiement}</td>
                     <td className="px-6 py-3">{new Date(p.datePaiement).toLocaleDateString()}</td>
+                    <td className="px-6 py-3">
+                        {p.statut === "Annulé" ? (
+                            <span className="text-red-600 font-semibold">Annulé</span>
+                        ) : (
+                            <span className="text-green-600 font-medium">Valide</span>
+                        )}
+                    </td>
+                    <td className="px-6 py-3 text-center">
+                    <button
+                      onClick={() => setPaiementAModifier(p)}
+                      className="text-indigo-600 hover:text-indigo-800"
+                      title="Modifier"
+                    >
+                      <Edit className="w-4 h-4" />
+                    </button>
+                    <button
+                        onClick={() => handleAnnuler(p._id)}
+                        className="text-red-600 hover:text-red-800 ml-3"
+                        title="Annuler"
+                    >
+                        <Trash2 className="w-4 h-4" />
+                    </button>
+                        {p.justificatifUrl && (
+                          <a
+                            href={p.justificatifUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-xs text-blue-600 hover:underline"
+                          >
+                            Voir le reçu
+                          </a>
+                        )}
+                    </td>
                   </tr>
                 ))
               )}

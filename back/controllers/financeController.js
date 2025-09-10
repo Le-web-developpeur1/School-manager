@@ -10,7 +10,7 @@ exports.creerPaiement = async (req, res) => {
         const { eleve, montant, motif, datePaiement, anneeScolaire, mois, periode, payeur, justificatifUrl, verifie, modePaiement } = req.body;
         const comptable = new mongoose.Types.ObjectId(req.user.id);
 
-        const eleveExiste = await Eleve.findById(eleve);
+        const eleveExiste = await Eleve.findById(eleve).populate("classe");
         if (!eleveExiste) {
             return res.status(404).json({ success: false, message:"Élève introuvable" });
         };
@@ -26,13 +26,15 @@ exports.creerPaiement = async (req, res) => {
         const reference = genererReferencePaiement();
 
         const paiement = await Paiement.create({ 
-            eleve, montant, mois, periode, datePaiement, 
+            eleve, classe: eleveExiste.classe._id, montant, 
+            mois, periode, datePaiement, 
             motif, anneeScolaire, comptable, reference,
             payeur, justificatifUrl, verifie, modePaiement
         });
 
         await paiement.populate("eleve", "nom prenom classe matricule");
         await paiement.populate("comptable", "nom prenom");
+        await paiement.populate("classe", "nom");
 
         try {
             return genereRecuPDF(paiement, res); // ✅ pipe vers la réponse
@@ -86,6 +88,7 @@ exports.listerPaiements = async (req, res) => {
         res.status(500).json({ success: false, message: "Erreur lors de la récupération des paiements", erreur: error.message });
     }
 };
+
 
 exports.releveEleve = async (req, res) => {
     try {
@@ -249,6 +252,7 @@ exports.updatePaiement = async (req, res) => {
 
         res.status(200).json({ success: true, message: "Paiement mis à jour avec succès", paiement });
     } catch (error) {
+        console.error('Erreur serveur', error);
         res.status(500).json({ success: false, message: "Erreur lors de la mise à jour du paiement", erreur: error.message });    
     }
 };
@@ -316,7 +320,7 @@ exports.getImpayes = async (req, res) => {
       // 💰 Paiements du mois en cours
       const paiementsMois = await Paiement.find(filtrePaiements).select('eleve montant');
   
-      const payesIds = paiementsMois.map(p => p.eleve.toString());
+      const payesIds = paiementsMois.map(p => p.eleve.toString()).filter(Boolean);
       const impayes = eleves.filter(e => !payesIds.includes(e._id.toString()));
   
       res.status(200).json({
@@ -344,7 +348,7 @@ exports.getRepartitionModesPaiement = async (req, res) => {
       }
   
       const repartition = await Paiement.aggregate([
-        { $match: filtre },
+        { $match: { ...filtre, modePaiement: { $exists: true, $ne: null } } },       
         { $group: { _id: "$modePaiement", montant: { $sum: "$montant" } } },
         { $sort: { montant: -1 } }
       ]);
