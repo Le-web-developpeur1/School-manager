@@ -105,7 +105,7 @@ exports.releveEleve = async (req, res) => {
 
         // Si l'utilisateur est un comptable, on filtre aussi par son ID
         if (req.user.role === 'comptable') {
-            filtre.comptable = req.user.id;
+            filtre.comptable = new mongoose.Types.ObjectId(req.user.id);
         }
 
         // Récupération des paiements
@@ -151,7 +151,7 @@ exports.totalParClasse = async (req, res) => {
 
         // 🔒 Filtre par comptable si rôle = comptable
         if (req.user.role === 'comptable') {
-            filtrePaiement.comptable = req.user.id;
+            filtrePaiement.comptable = new mongoose.Types.ObjectId(req.user.id);
         }
 
         // Filtre par année scolaire

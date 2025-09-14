@@ -17,4 +17,5 @@ router.get('/releve/:eleveId', authMiddleware, checkRole(['comptable']), finance
 router.get('/total-par-classe/:classeId', authMiddleware, checkRole(['comptable']), financeController.totalParClasse);
 router.get('/recherche-eleve', authMiddleware, checkRole(['comptable']), financeController.rechercherEleve);
 
+
 module.exports = router;

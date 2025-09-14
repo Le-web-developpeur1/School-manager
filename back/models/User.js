@@ -36,7 +36,8 @@ const userSchema = new mongoose.Schema({
         enum: ['admin', 'comptable', 'enseignant'],
     },
     actif: {type: Boolean, default: true},
-    dateInscription: {type: Date, default: Date.now}
+    dateInscription: {type: Date, default: Date.now},
+    lastLogin: { type: Date },
 });
 
 module.exports = mongoose.model('User', userSchema);

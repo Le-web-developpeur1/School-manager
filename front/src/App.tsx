@@ -8,6 +8,10 @@ import ElevePage from './pages/ElevePage';
 import MatieresPage from './pages/MatieresPage';
 import DashboardComptable from './pages/DashboardComptable';
 import PaiementsPage from './pages/PaiementsPage';
+import AdminExportPage from './pages/AdminExportPage';
+import SettingsPage from './pages/SettingsAdminPage';
+import ComptableExportPage from './pages/ComptableExportPage';
+import SettingsComptablePage from './pages/SettingsComptablePage';
 
 
 
@@ -24,6 +28,10 @@ const AppRouter = () => {
             <Route path='/classes' element={<ClassePage/>} />
             <Route path='/eleves' element={<ElevePage/>} />
             <Route path='/matieres' element={<MatieresPage/>} />
+            <Route path='/admin-exports' element={<AdminExportPage/>} />
+            <Route path='/comptable-exports' element={<ComptableExportPage/>} />
+            <Route path='/admin-settings' element={<SettingsPage/>} />
+            <Route path='/comptable-settings' element={<SettingsComptablePage/>} />
             </Routes>
         </BrowserRouter>
     )

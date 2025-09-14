@@ -26,7 +26,7 @@ const PaiementsTable = () => {
   const [query, setQuery] = useState("");
   const [filtre, setFiltre] = useState<{ jour?: boolean; semaine?: boolean }>({ jour: true });
   const [currentPage, setCurrentPage] = useState(1);
-  const paiementsPerPage = 9;
+  const paiementsPerPage = 8;
   const [formVisible, setFormVisible] = useState(false);
   const [releveVisible, setReleveVisible] = useState(false);
   const [eleveIdReleve, setEleveIdReleve] = useState<string | null>(null);

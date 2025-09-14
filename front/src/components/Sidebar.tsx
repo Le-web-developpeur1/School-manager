@@ -49,7 +49,10 @@ const Sidebar = () => {
               <NavLink to="/matieres" className={linkClass}>
                 <Book size={18} /> Matières
               </NavLink>
-              <NavLink to="/settings" className={linkClass}>
+              <NavLink to="/admin-exports" className={linkClass}>
+                <Bell size={18} /> Exports
+              </NavLink>
+              <NavLink to="/admin-settings" className={linkClass}>
                 <Settings size={18} /> Paramètres
               </NavLink>
             </>
@@ -62,10 +65,10 @@ const Sidebar = () => {
               <NavLink to="/paiements" className={linkClass}>
                 <CheckCircle size={18} /> Paiements
               </NavLink>
-              <NavLink to="/exports" className={linkClass}>
+              <NavLink to="/comptable-exports" className={linkClass}>
                 <Bell size={18} /> Exports
               </NavLink>
-              <NavLink to="/settings" className={linkClass}>
+              <NavLink to="/comptable-settings" className={linkClass}>
                 <Settings size={18} /> Paramètres
               </NavLink>
             </>

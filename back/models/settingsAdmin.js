@@ -17,11 +17,22 @@ const settingSchema = new mongoose.Schema({
         type: String,
         default: 'fr'
     },
-    roles: {
-        admin: { type: Boolean, default: true },
-        enseignant: { type: Boolean, default: true },
-        comptable: { type: Boolean, default: true }
+    permissions: {
+        admin: [ "exports", "paiements", "parametres" ],
+        enseignant: [ "eleves", "notes" ],
+        comptable: [ "paiements", "exports" ]
     },
+    logoUrl: { 
+        type: String, 
+        default: "" 
+    },
+    periods: [
+        {
+          nom: String,
+          debut: Date,
+          fin: Date
+        }
+    ], 
     grandingPolicy: {
         useCoefficients: { type: Boolean, default: false},
         rounding: { type: Boolean, default: true }
@@ -29,6 +40,15 @@ const settingSchema = new mongoose.Schema({
     notifications: {
         emailEnabled: { type: Boolean, default: false },
         smsEnabled: { type: Boolean, default: false }
+    },
+    exportDefaults: {
+        filePrefix: { type: String, default: "Releve_" },
+        includeSignature: { type: Boolean, default: true },
+        formatMontant: { type: String, enum: ["fr", "us"], default: "fr" }
+    },      
+    isActive: { 
+        type: Boolean, 
+        default: true 
     }
 }, {
     timestamps: true
