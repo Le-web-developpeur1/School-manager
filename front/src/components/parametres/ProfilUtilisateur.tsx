@@ -85,10 +85,14 @@ const ProfilUtilisateur = () => {
           placeholder="Rôle"
         />
         <input
-          value={new Date(profil.lastLogin).toLocaleString("fr-FR") || "—"}
-          disabled
-          className="px-3 py-2 border rounded bg-gray-100 col-span-2"
-          placeholder="Dernière connexion"
+            value={
+                profil.lastLogin
+                ? `${new Date(profil.lastLogin).toLocaleString("fr-FR")}  -  Dernière connexion`
+                : "—"
+            }          
+            disabled
+            className="px-3 py-2 border rounded bg-gray-100 col-span-2"
+            placeholder="Dernière connexion"
         />
       </div>
 

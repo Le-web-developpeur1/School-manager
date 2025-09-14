@@ -251,7 +251,8 @@ const SettingsAdmin = () => {
           </div>
 
           {/* Résumé */}
-          <div className="col-span-4 bg-white p-4 rounded-xl border mt-4 text-sm text-gray-600">
+        </div>
+          <div className=" bg-white p-4 max-w-md rounded-xl border mt-4 text-sm text-gray-600">
             <h3 className="font-semibold text-gray-700 mb-2">📘 Résumé</h3>
             <p>École : <strong>{settings.schoolName}</strong></p>
             <p>Année scolaire : <strong>{settings.academicYear}</strong></p>
@@ -260,8 +261,15 @@ const SettingsAdmin = () => {
               Notifications : Email {settings.notifications?.emailEnabled ? "✅" : "❌"} / SMS{" "}
               {settings.notifications?.smsEnabled ? "✅" : "❌"}
             </p>
+            <div className="flex justify-end">
+              <a
+                href="/profil-utilisateur"
+                className="inline-flex items-center  rounded-lg bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 text-sm"
+              >
+                👤 Voir le profil utilisateur
+              </a>
+            </div>
           </div>
-        </div>
       </div>
     </div>
   );
